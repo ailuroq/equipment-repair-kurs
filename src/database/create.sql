@@ -80,6 +80,7 @@ CREATE TABLE IF NOT EXISTS  "Client" (
 CREATE TABLE IF NOT EXISTS  "repairs" (
 	"id" serial NOT NULL,
 	"orderId" integer NOT NULL,
+	"workId" integer NOT NULL,
 	CONSTRAINT "repairs_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -92,7 +93,6 @@ CREATE TABLE IF NOT EXISTS  "work" (
 	"description" VARCHAR(255) NOT NULL,
 	"price" FLOAT NOT NULL,
 	"completion" BOOLEAN NOT NULL,
-	"repairId" integer,
 	CONSTRAINT "work_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -144,8 +144,8 @@ ALTER TABLE "repair_firm" ADD CONSTRAINT "repair_firm_fk0" FOREIGN KEY ("cityId"
 
 
 ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk0" FOREIGN KEY ("orderId") REFERENCES "orders"("id");
+ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk1" FOREIGN KEY ("workId") REFERENCES "work"("id");
 
-ALTER TABLE "work" ADD CONSTRAINT "work_fk0" FOREIGN KEY ("repairId") REFERENCES "repairs"("id");
 
 ALTER TABLE "master" ADD CONSTRAINT "master_fk0" FOREIGN KEY ("firmId") REFERENCES "repair_firm"("id");
 ALTER TABLE "master" ADD CONSTRAINT "master_fk1" FOREIGN KEY ("postId") REFERENCES "post"("id");
