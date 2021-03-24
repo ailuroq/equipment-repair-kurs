@@ -48,9 +48,9 @@ CREATE TABLE IF NOT EXISTS  "repair_firm" (
 
 
 CREATE TABLE IF NOT EXISTS  "city" (
-	"id_города" serial NOT NULL,
+	"id" serial NOT NULL,
 	"name" varchar(255) NOT NULL,
-	CONSTRAINT "city_pk" PRIMARY KEY ("id_города")
+	CONSTRAINT "city_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
@@ -140,7 +140,7 @@ ALTER TABLE "device" ADD CONSTRAINT "device_fk2" FOREIGN KEY ("clientId") REFERE
 ALTER TABLE "device" ADD CONSTRAINT "device_fk3" FOREIGN KEY ("modelId") REFERENCES "model"("id");
 
 
-ALTER TABLE "repair_firm" ADD CONSTRAINT "repair_firm_fk0" FOREIGN KEY ("cityId") REFERENCES "city"("id_города");
+ALTER TABLE "repair_firm" ADD CONSTRAINT "repair_firm_fk0" FOREIGN KEY ("cityId") REFERENCES "city"("id");
 
 
 ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk0" FOREIGN KEY ("orderId") REFERENCES "orders"("id");
