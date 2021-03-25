@@ -1,4 +1,5 @@
 const fs = require('fs')
+
 exports.fileToArray = (filePath, array) => {
     return new Promise((res, rej) => {
         try {

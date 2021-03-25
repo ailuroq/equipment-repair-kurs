@@ -1,16 +1,21 @@
-const pool = require('../../../database/pool')
-const generations = require("../common/generations");
+const pool = require('./../../../database/pool')
+const generations = require("../full-name-generation/generations");
 
-clientGeneration = async () => {
-    let query = `INSERT INTO client(lastname, firstname, middlename, phone) VALUES($1, $2, $3, $4) returning *`
+exports.masterGeneration = async () => {
     try {
+        let query = "INSERT INTO master(lastname, firstname, middlename, experience, firmId, postId) " +
+                    "VALUES($1, $2, $3, $4) returning *"
+
         for (let i = 0; i <= 10000; i++) {
             const fullName = await generations.fullNameGeneration()
+            let experience = Math.floor(Math.random() * 30)
             const values = [
                 fullName.randomLastname,
                 fullName.randomFirstname,
                 fullName.randomMiddlename,
-                generations.randomPhoneNumberGeneration()
+                experience,
+                firmId,
+                postId
             ]
             pool.connect((err, client, done) => {
                 client.query(query, values, (err, result) => {
@@ -23,8 +28,6 @@ clientGeneration = async () => {
         }
 
     } catch (e) {
-
+        console.log(e)
     }
 }
-
-clientGeneration()

@@ -1,19 +1,18 @@
 const {fileToArray} = require("./fileToArray");
 
-
 exports.fullNameGeneration = async () => {
     let female_firstnames = []
-    female_firstnames = await fileToArray("./female/female-firstnames", female_firstnames)
+    female_firstnames = await fileToArray("./full-name-generation/female/female-firstnames", female_firstnames)
     let female_lastnames = []
-    female_lastnames = await fileToArray("./female/female-lastnames", female_lastnames)
+    female_lastnames = await fileToArray("./full-name-generation/female/female-lastnames", female_lastnames)
     let female_middlenames = []
-    female_middlenames = await fileToArray("./female/female-middlenames", female_middlenames)
+    female_middlenames = await fileToArray("./full-name-generation/female/female-middlenames", female_middlenames)
     let male_firstnames = []
-    male_firstnames = await fileToArray("./male/male-firstnames", male_firstnames)
+    male_firstnames = await fileToArray("./full-name-generation/male/male-firstnames", male_firstnames)
     let male_lastnames = []
-    male_lastnames = await fileToArray("./male/male-lastnames", male_lastnames)
+    male_lastnames = await fileToArray("./full-name-generation/male/male-lastnames", male_lastnames)
     let male_middlenames = []
-    male_middlenames = await fileToArray("./male/male-middlenames", male_middlenames)
+    male_middlenames = await fileToArray("./full-name-generation/male/male-middlenames", male_middlenames)
     if (Math.random() < 0.5) {
         //female full name return
         const randomFirstname = getRandomItemFromArray(female_firstnames)
@@ -37,7 +36,6 @@ exports.fullNameGeneration = async () => {
         randomMiddlename
     }
     console.log(maleFullName)
-
     return maleFullName
 }
 
