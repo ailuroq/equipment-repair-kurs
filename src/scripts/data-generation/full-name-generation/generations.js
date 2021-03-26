@@ -23,7 +23,6 @@ exports.fullNameGeneration = async () => {
             randomFirstname,
             randomMiddlename
         }
-        console.log(femaleFullName)
         return femaleFullName
     }
     //male full name return
@@ -35,7 +34,6 @@ exports.fullNameGeneration = async () => {
         randomFirstname,
         randomMiddlename
     }
-    console.log(maleFullName)
     return maleFullName
 }
 

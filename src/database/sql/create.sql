@@ -12,66 +12,66 @@ CREATE TABLE IF NOT EXISTS "orders"(
 );
 
 
-CREATE TABLE IF NOT EXISTS  "device" (
+CREATE TABLE IF NOT EXISTS  "devices" (
 	"id" serial NOT NULL,
-	"name" varchar(255) NOT NULL,
-	"photoId" integer,
+	"nameId" integer,
+	"photo" varchar(255) NOT NULL,
 	"countryId" integer,
 	"brandId" integer,
 	"clientId" integer,
-	"modelId" integer,
-	CONSTRAINT "device_pk" PRIMARY KEY ("id")
+	"model" varchar(255) NOT NULL,
+	CONSTRAINT "devices_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
-CREATE TABLE IF NOT EXISTS  "model" (
+CREATE TABLE IF NOT EXISTS  "device_names" (
 	"id" serial NOT NULL,
 	"name" VARCHAR(255) NOT NULL,
-	CONSTRAINT "model_pk" PRIMARY KEY ("id")
+	CONSTRAINT "device_names_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
-CREATE TABLE IF NOT EXISTS  "repair_firm" (
+CREATE TABLE IF NOT EXISTS  "repair_firms" (
 	"id" serial,
 	"name" varchar(255),
 	"address" varchar(255),
 	"phone" varchar(255),
 	"cityId" integer,
-	CONSTRAINT "repair_firm_pk" PRIMARY KEY ("id")
+	CONSTRAINT "repair_firms_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
-CREATE TABLE IF NOT EXISTS  "city" (
+CREATE TABLE IF NOT EXISTS  "cities" (
 	"id" serial NOT NULL,
 	"name" varchar(255) NOT NULL,
-	CONSTRAINT "city_pk" PRIMARY KEY ("id")
+	CONSTRAINT "cities_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
-CREATE TABLE IF NOT EXISTS  "post" (
+CREATE TABLE IF NOT EXISTS  "posts" (
 	"id" serial NOT NULL,
 	"name" VARCHAR(255) NOT NULL,
-	CONSTRAINT "post_pk" PRIMARY KEY ("id")
+	CONSTRAINT "posts_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
-CREATE TABLE IF NOT EXISTS  "client" (
+CREATE TABLE IF NOT EXISTS  "clients" (
 	"id" serial NOT NULL,
 	"lastname" varchar(255) NOT NULL,
 	"firstname" varchar(255) NOT NULL,
 	"middlename" varchar(255) NOT NULL,
 	"phone" varchar(255) NOT NULL,
-	CONSTRAINT "client_pk" PRIMARY KEY ("id")
+	CONSTRAINT "clients_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS  "work" (
 );
 
 
-CREATE TABLE IF NOT EXISTS  "master" (
+CREATE TABLE IF NOT EXISTS  "masters" (
 	"id" serial NOT NULL,
 	"lastname" VARCHAR(255) NOT NULL,
 	"firstname" VARCHAR(255) NOT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS  "master" (
 	"experience" integer NOT NULL,
 	"firmId" integer,
 	"postId" integer,
-	CONSTRAINT "master_pk" PRIMARY KEY ("id")
+	CONSTRAINT "masters_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
@@ -122,40 +122,32 @@ CREATE TABLE IF NOT EXISTS  "country" (
 );
 
 
-CREATE TABLE IF NOT EXISTS  "brand" (
+CREATE TABLE IF NOT EXISTS  "brands" (
 	"id" serial NOT NULL,
 	"name" VARCHAR(255) NOT NULL,
-	CONSTRAINT "brand_pk" PRIMARY KEY ("id")
+	CONSTRAINT "brands_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
-CREATE TABLE IF NOT EXISTS  "photo" (
-	"id" serial NOT NULL,
-	"name" VARCHAR(255) NOT NULL,
-	CONSTRAINT "photo_pk" PRIMARY KEY ("id")
-) WITH (
-  OIDS=FALSE
-);
 
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk0" FOREIGN KEY ("deviceId") REFERENCES "device"("id");
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("firmId") REFERENCES "repair_firm"("id");
+ALTER TABLE "orders" ADD CONSTRAINT "orders_fk0" FOREIGN KEY ("deviceId") REFERENCES "devices"("id");
+ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("firmId") REFERENCES "repair_firms"("id");
 
-ALTER TABLE "device" ADD CONSTRAINT "device_fk0" FOREIGN KEY ("countryId") REFERENCES "country"("id");
-ALTER TABLE "device" ADD CONSTRAINT "device_fk1" FOREIGN KEY ("brandId") REFERENCES "brand"("id");
-ALTER TABLE "device" ADD CONSTRAINT "device_fk2" FOREIGN KEY ("clientId") REFERENCES "client"("id");
-ALTER TABLE "device" ADD CONSTRAINT "device_fk3" FOREIGN KEY ("modelId") REFERENCES "model"("id");
-ALTER TABLE "device" ADD CONSTRAINT "device_fk4" FOREIGN KEY ("photoId") REFERENCES "photo"("id");
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk0" FOREIGN KEY ("countryId") REFERENCES "country"("id");
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk1" FOREIGN KEY ("brandId") REFERENCES "brands"("id");
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk2" FOREIGN KEY ("clientId") REFERENCES "clients"("id");
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk3" FOREIGN KEY ("nameId") REFERENCES "device_names"("id");
 
 
-ALTER TABLE "repair_firm" ADD CONSTRAINT "repair_firm_fk0" FOREIGN KEY ("cityId") REFERENCES "city"("id");
+ALTER TABLE "repair_firms" ADD CONSTRAINT "repair_firms_fk0" FOREIGN KEY ("cityId") REFERENCES "cities"("id");
 
 
 ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk0" FOREIGN KEY ("orderId") REFERENCES "orders"("id");
 ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk1" FOREIGN KEY ("workId") REFERENCES "work"("id");
 
 
-ALTER TABLE "master" ADD CONSTRAINT "master_fk0" FOREIGN KEY ("firmId") REFERENCES "repair_firm"("id");
-ALTER TABLE "master" ADD CONSTRAINT "master_fk1" FOREIGN KEY ("postId") REFERENCES "post"("id");
+ALTER TABLE "masters" ADD CONSTRAINT "masters_fk0" FOREIGN KEY ("firmId") REFERENCES "repair_firms"("id");
+ALTER TABLE "masters" ADD CONSTRAINT "masters_fk1" FOREIGN KEY ("postId") REFERENCES "posts"("id");
 
 

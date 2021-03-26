@@ -1,9 +1,11 @@
 const pool = require('./../../../database/pool')
 const generations = require("../full-name-generation/generations");
-exports.clientGeneration = async () => {
+exports.clientGeneration = async (numberOfClients) => {
     try {
-        let query = `INSERT INTO client(lastname, firstname, middlename, phone) VALUES($1, $2, $3, $4) returning *`
-        for (let i = 0; i <= 10000; i++) {
+        let seqResetQuery = "SELECT setval('clients_id_seq', 0);"
+        await pool.query(seqResetQuery)
+        let insertClientsQuery = `INSERT INTO clients(lastname, firstname, middlename, phone) VALUES($1, $2, $3, $4) returning *`
+        for (let i = 0; i < numberOfClients; i++) {
             const fullName = await generations.fullNameGeneration()
             const values = [
                 fullName.randomLastname,
@@ -11,13 +13,8 @@ exports.clientGeneration = async () => {
                 fullName.randomMiddlename,
                 generations.randomPhoneNumberGeneration()
             ]
-            pool.connect((err, client, done) => {
-                client.query(query, values, (err, result) => {
-                    if (err) {
-                        throw err;
-                    }
-                    done()
-                })
+            await pool.query(insertClientsQuery, values, (err) => {
+                if (err) throw err
             })
         }
 
