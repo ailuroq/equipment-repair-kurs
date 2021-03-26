@@ -1,20 +1,23 @@
-const {repairGeneration} = require("./repairs/repairGenerator");
-const {ordersGeneration} = require("./orders/orderGeneration");
-const {masterGeneration} = require("./masters/masterGeneration");
-const {repairFirmGeneration} = require("./repair-firms/repairFirmGenerator");
-const {deviceGeneration} = require("./devices/deviceGeneration");
 const {clientGeneration} = require("./clients/clientGeneration");
+const pool = require('./../../database/pool')
 
-const fullGeneration = async () => {
-    const numberOfClients = 10000
-    clientGeneration(numberOfClients)
-    deviceGeneration(20000)
-    repairFirmGeneration()
-    masterGeneration()
-    ordersGeneration()
-    repairGeneration()
+
+const fullGeneration = async (numberOfClients) => {
+    let deleteAllTables = "DELETE FROM repairs;" +
+                          "DELETE FROM orders;" +
+                          "DELETE FROM masters;" +
+                          "DELETE FROM repair_firms;" +
+                          "DELETE FROM devices;" +
+                          "DELETE FROM clients;"
+    await pool.query(deleteAllTables, (err) => {
+        if (err) throw err
+        if (numberOfClients % 2) numberOfClients+=1
+        console.log(numberOfClients)
+        clientGeneration(numberOfClients)
+    })
+
 }
 
 
 
-fullGeneration()
+fullGeneration(111)

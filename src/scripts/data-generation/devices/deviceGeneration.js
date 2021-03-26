@@ -1,9 +1,15 @@
 const pool = require('./../../../database/pool')
+const {repairFirmGeneration} = require("../repair-firms/repairFirmGeneration");
 
-exports.deviceGeneration = async (numberOfDevices) => {
+exports.deviceGeneration = async () => {
     try {
         let seqResetQuery = "SELECT setval('devices_id_seq', 0);"
         await pool.query(seqResetQuery)
+
+        let countClientsQuery = "SELECT count(*) AS exact_count FROM clients;"
+        const resultQuery = await pool.query(countClientsQuery)
+        const numberOfDevices = resultQuery.rows[0].exact_count * 2
+
         let nameId
         let photo
         let countryId
@@ -37,12 +43,12 @@ exports.deviceGeneration = async (numberOfDevices) => {
                                   "LIMIT 1;"
 
         let getRandomDeviceNameQuery = "SELECT * FROM device_names \n" +
-                                  "ORDER BY random()\n" +
-                                  "LIMIT 1;"
+                                       "ORDER BY random()\n" +
+                                       "LIMIT 1;"
 
         let getRandomCountryNameQuery = "SELECT * FROM country \n" +
-                                   "ORDER BY random()\n" +
-                                   "LIMIT 1;"
+                                        "ORDER BY random()\n" +
+                                        "LIMIT 1;"
 
         let insertDeviceQuery = "INSERT INTO devices(name_id, photo, country_id, brand_id, client_id, model) " +
                                 "VALUES($1, $2, $3, $4, $5, $6) returning *"
@@ -54,14 +60,12 @@ exports.deviceGeneration = async (numberOfDevices) => {
             countryId = requestData.rows[0].id
             requestData = await pool.query(getRandomBrandQuery)
             brandId = requestData.rows[0].id
-            if (i <= numberOfDevices/2) {
-                clientId = i
-            } else {
-                clientId = Math.floor(Math.random() * numberOfDevices/2) + 1
-            }
             model = Math.random().toString(36).substring(7)
             photo = photos[Math.floor(Math.random() * photos.length)]
-            //nameId, photo, countryId, brandId, clientId, model
+
+            if (i <= numberOfDevices / 2) clientId = i
+            else clientId = Math.floor(Math.random() * numberOfDevices/2) + 1
+
             const values = [
                 nameId,
                 photo,
@@ -76,6 +80,7 @@ exports.deviceGeneration = async (numberOfDevices) => {
             })
 
         }
+        repairFirmGeneration()
     } catch (e) {
         throw e
     }

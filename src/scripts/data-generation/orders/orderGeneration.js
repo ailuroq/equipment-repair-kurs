@@ -1,13 +1,19 @@
-const moment = require('moment')
 const pool = require('./../../../database/pool')
-const generations = require("../full-name-generation/generations");
+const {repairGeneration} = require("../repairs/repairGeneration");
 
 exports.ordersGeneration = async () => {
     try {
         let seqResetQuery = "SELECT setval('orders_id_seq', 0);"
         await pool.query(seqResetQuery)
 
-        let receiptNumber
+        let countDevices = "SELECT count(*) AS exact_count FROM devices;"
+        let resultQuery = await pool.query(countDevices)
+        const numberOfOrders = resultQuery.rows[0].exact_count
+
+        let countFirmsQuery = "SELECT count(*) AS exact_count FROM repair_firms;"
+        resultQuery = await pool.query(countFirmsQuery)
+        const numberOfFirms = resultQuery.rows[0].exact_count
+
         let orderDate
         let completionDate
         let isCompleted = false
@@ -15,10 +21,10 @@ exports.ordersGeneration = async () => {
         let firmId
 
         let insertOrdersQuery = "INSERT INTO orders(receipt_number, order_date, completion_date, order_completed, device_id, firm_id) " +
-                                "VALUES($1, $2, $3, $4, $5, $6) returning *"
+            "VALUES($1, $2, $3, $4, $5, $6) returning *"
 
-        for (let i = 1; i <= 15000; i++) {
-            orderDate = new Date(getFullDate())
+        for (let i = 1; i <= numberOfOrders; i++) {
+            orderDate = randomDate(new Date(2000, 0, 1), new Date())
             isCompleted = false
             completionDate = null
 
@@ -27,11 +33,10 @@ exports.ordersGeneration = async () => {
                 completionDate = getDateMoreThan(orderDate)
             }
             deviceId = i
-
-            if (i <= 10000) {
+            if (i <= numberOfFirms) {
                 firmId = i
             } else {
-                firmId =  Math.floor(Math.random() * 10000) + 1
+                firmId = Math.floor(Math.random() * numberOfFirms) + 1
             }
 
             const values = [
@@ -47,6 +52,7 @@ exports.ordersGeneration = async () => {
                 if (err) throw err
             })
         }
+        repairGeneration()
 
     } catch (e) {
         throw e
@@ -73,8 +79,7 @@ const getFullDate = () => {
 
     if (month % 2) {
         day = getRandomArbitrary(1, 31)
-    }
-    else {
+    } else {
         day = getRandomArbitrary(1, 30)
         if (month === 2) {
             if (isLeapYear(year)) day = getRandomArbitrary(1, 29)
@@ -85,9 +90,15 @@ const getFullDate = () => {
 }
 
 const getDateMoreThan = (date1) => {
-    let date2 = new Date(getFullDate())
-    while (date1 >= date2) {
-        date2 = new Date(getFullDate())
-    }
+    let date2
+    do {
+        date2 = randomDate(new Date(200, 0, 1), new Date())
+    } while(date1 >= date2)
     return date2
 }
+
+const randomDate = (start, end) => {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+}
+
+console.log(randomDate(new Date(2012, 0, 1), new Date()));

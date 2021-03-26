@@ -1,5 +1,5 @@
 const pool = require('./../../../database/pool')
-const generations = require("../full-name-generation/generations");
+
 exports.repairGeneration = async () => {
     try {
         let seqResetQuery = "SELECT setval('repairs_id_seq', 0);"
@@ -9,12 +9,17 @@ exports.repairGeneration = async () => {
         let workId
         let completion
 
+        let countOrdersQuery = "SELECT count(*) AS exact_count FROM orders;"
+        const resultQuery = await pool.query(countOrdersQuery)
+        const numberOfOrders = resultQuery.rows[0].exact_count
+        const numberOfRepairs = resultQuery.rows[0].exact_count * 3
+
         let insertRepairQuery = "INSERT INTO repairs(order_id, work_id, completion) " +
                                 "VALUES($1, $2, $3) returning *"
 
-        for (let i = 1; i <= 20000; i++) {
-            if (i <= 15000) orderId = i
-            else orderId = Math.floor(Math.random() * 10000) + 1
+        for (let i = 1; i <= numberOfRepairs; i++) {
+            if (i <= numberOfOrders) orderId = i
+            else orderId = Math.floor(Math.random() * numberOfOrders) + 1
 
             workId = Math.floor(Math.random() * 4) + 1
             completion = Math.random() < 0.8;
@@ -35,6 +40,9 @@ exports.repairGeneration = async () => {
                 if (err) throw err
             })
         }
+        pool.end(() => {
+            console.log('pool has ended')
+        })
 
     } catch (e) {
         console.log(e)
