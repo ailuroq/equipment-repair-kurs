@@ -9,10 +9,9 @@ const fullGeneration = async (numberOfClients) => {
                           "DELETE FROM repair_firms;" +
                           "DELETE FROM devices;" +
                           "DELETE FROM clients;"
+
     await pool.query(deleteAllTables, (err) => {
         if (err) throw err
-        if (numberOfClients % 2) numberOfClients+=1
-        console.log(numberOfClients)
         clientGeneration(numberOfClients)
     })
 
@@ -20,4 +19,4 @@ const fullGeneration = async (numberOfClients) => {
 
 
 
-fullGeneration(111)
+fullGeneration(10000)
