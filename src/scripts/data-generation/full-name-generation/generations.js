@@ -39,4 +39,4 @@ exports.fullNameGeneration = async () => {
 
 const getRandomItemFromArray = (array) => array[Math.floor(Math.random() * array.length)]
 
-exports.randomPhoneNumberGeneration = () => '+' + Math.floor(1000000000 + Math.random() * 9000000000)
+exports.randomPhoneNumberGeneration = () => '+380' + Math.floor(1000000 + Math.random() * 9000000)

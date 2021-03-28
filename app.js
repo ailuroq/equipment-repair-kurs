@@ -2,20 +2,18 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const http = require('http').createServer(app)
+const cors = require('cors')
 require('dotenv').config()
 
-app.use('/api', require('./src/routes'))
 
-app.use(require('cors')({
-    'origin': true,
-    'methods': 'GET,POST,PUT,DELETE,OPTIONS',
-    'allowedHeaders': ['Content-Type', 'x-access-token', 'user-agent'],
-    'optionsSuccessStatus': 200
-}));
+app.use(cors())
 
 app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use('/api', require('./src/routes'))
+
 
 PORT = process.env.PORT
 http.listen(PORT, () => {
