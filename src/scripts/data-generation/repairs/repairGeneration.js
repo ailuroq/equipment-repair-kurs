@@ -41,7 +41,7 @@ exports.repairGeneration = async () => {
             })
         }
         pool.end(() => {
-            console.log('pool has ended')
+            console.log('Генерация закончилась успешно!')
         })
 
     } catch (e) {

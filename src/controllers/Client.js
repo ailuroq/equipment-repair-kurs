@@ -18,7 +18,7 @@ exports.getAllClients = async () => {
 
 exports.getLimitedClients = async (limit) => {
     const getClientsQuery = "SELECT * FROM clients\n" +
-                          "ORDER BY id ASC LIMIT $1"
+                            "ORDER BY id ASC LIMIT $1"
 
     const queryResult = await pool.query(getClientsQuery, [limit])
     const clients = queryResult.rows
