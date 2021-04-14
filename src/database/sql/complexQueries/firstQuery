@@ -1,0 +1,25 @@
+1 часть
+select brands.name, repair_firms.name, repair_firms.id, count(*) from brands
+left join devices on brand_id = brands.id
+left join orders on device_id = devices.id
+left join repair_firms on firm_id = repair_firms.id
+group by brands.name, repair_firms.name, repair_firms.id
+order by count(*) desc
+
+
+2 часть
+Чтобы просмотреть топ брендов и их количество
+................
+select name, count(*) from devices
+left join brands on brand_id = brands.id
+group by name
+order by count(*) desc
+................
+Чтобы получить тройку лидеров по всем мастерским в целом
+.........................
+select name from devices
+left join brands on brand_id = brands.id
+group by name
+order by count(*) desc
+limit 3
+.........................

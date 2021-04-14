@@ -1,0 +1,6 @@
+select sum(work.price),count(*), repair_firms.id, repair_firms.name from work
+left join repairs on work_id = work.id
+left join orders on order_id = orders.id
+left join repair_firms on firm_id = repair_firms.id
+where extract(month from orders.order_date) = 1
+group by work.price, repair_firms.id, repair_firms.name
