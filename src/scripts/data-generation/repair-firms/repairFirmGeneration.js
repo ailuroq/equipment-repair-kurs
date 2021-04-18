@@ -9,7 +9,7 @@ exports.repairFirmGeneration = async () => {
 
         let countDevicesQuery = "SELECT count(*) AS exact_count FROM devices;"
         const resultQuery = await pool.query(countDevicesQuery)
-        const numberOfFirms = resultQuery.rows[0].exact_count / 10
+        const numberOfFirms = resultQuery.rows[0].exact_count / 65
 
         let name
         let address

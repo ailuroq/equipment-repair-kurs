@@ -41,4 +41,35 @@ router.put('/:id', async (req, res, next) => {
     }
 })
 
+router.get('/info/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const result = await Client.getClientForView(id)
+        res.send(result)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.post('/delete/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const result = await Client.deleteClientById(id)
+        res.send(result)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get('/problems/:id', async(req, res, next) => {
+    try {
+        const id = req.params.id
+        const result = await Client.getPotentialProblems(id)
+        console.log(result)
+        res.send(result)
+    } catch (err) {
+        next(err)
+    }
+})
+
 module.exports = router

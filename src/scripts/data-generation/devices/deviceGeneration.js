@@ -17,34 +17,35 @@ exports.deviceGeneration = async () => {
         let clientId
         let model
         let photos = [
-            'camera.jpg',
-            'fax.jpg',
-            'gamapad.jpg',
-            'headphones.jpg',
-            'keyboard.jpg',
             'laptop.jpg',
-            'micriphone.jpg',
-            'mouse.jpg',
             'phone.jpg',
-            'player.jpg',
-            'printer.jpg',
-            'pult.jpg',
-            'quadcopter.jpg',
-            'refrigerator.jpg',
-            'screen.jpg',
-            'speaker.jpg',
             'tablet.jpg',
+            'camera.jpg',
             'watch.jpg',
+            'keyboard.jpg',
+            'mouse.jpg',
+            'speaker.jpg',
+            'headphones.jpg',
+            'refrigerator.jpg',
+            'player.jpg',
+            'gamepad.jpg',
+            'quadcopter.jpg',
+            'screen.jpg',
+            'printer.jpg',
+            'fax.jpg',
+            'microphone.jpg',
             'web-camera.jpg',
+            'pult.jpg'
         ]
+
 
         let getRandomBrandQuery = "SELECT * FROM brands\n" +
                                   "ORDER BY random()\n" +
                                   "LIMIT 1;"
 
-        let getRandomDeviceNameQuery = "SELECT * FROM device_names \n" +
-                                       "ORDER BY random()\n" +
-                                       "LIMIT 1;"
+        let getRandomDeviceNameQuery = "SELECT * FROM device_names\n" +
+                                       "WHERE id = $1\n" +
+                                       "LIMIT 1"
 
         let getRandomCountryNameQuery = "SELECT * FROM country \n" +
                                         "ORDER BY random()\n" +
@@ -54,14 +55,15 @@ exports.deviceGeneration = async () => {
                                 "VALUES($1, $2, $3, $4, $5, $6) returning *"
 
         for (let i = 1; i <= numberOfDevices; i++) {
-            let requestData = await pool.query(getRandomDeviceNameQuery)
+            const randomNumber = Math.floor(Math.random() * photos.length)
+            let requestData = await pool.query(getRandomDeviceNameQuery, [randomNumber])
             nameId = requestData.rows[0].id
             requestData = await pool.query(getRandomCountryNameQuery)
             countryId = requestData.rows[0].id
             requestData = await pool.query(getRandomBrandQuery)
             brandId = requestData.rows[0].id
             model = Math.random().toString(36).substring(7)
-            photo = photos[Math.floor(Math.random() * photos.length)]
+            photo = photos[randomNumber]
 
             if (i <= numberOfDevices / 2) clientId = i
             else clientId = Math.floor(Math.random() * numberOfDevices/2) + 1
