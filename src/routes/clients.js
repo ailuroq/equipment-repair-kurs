@@ -11,16 +11,6 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-router.get('/:limit', async (req, res, next) => {
-    try {
-        const limit = req.params.limit
-        const result = await Client.getLimitedClients(limit)
-        res.send(result)
-    } catch (err) {
-        next(err)
-    }
-})
-
 router.post('/', async (req, res, next) => {
     try {
         const {firstname, lastname, middlename, phone} = req.body
@@ -35,6 +25,17 @@ router.put('/:id', async (req, res, next) => {
     try {
         const {firstname, lastname, middlename, phone} = req.body
         const result = await Client.updateClientById(req.params.id, firstname, lastname, middlename, phone)
+        res.send(result)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.get('/search', async (req, res, next) => {
+    try {
+        const clientData = req.query.clientData
+        console.log(clientData)
+        const result = await Client.find(clientData)
         res.send(result)
     } catch (err) {
         next(err)
@@ -65,7 +66,6 @@ router.get('/problems/:id', async(req, res, next) => {
     try {
         const id = req.params.id
         const result = await Client.getPotentialProblems(id)
-        console.log(result)
         res.send(result)
     } catch (err) {
         next(err)

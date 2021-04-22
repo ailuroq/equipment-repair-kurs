@@ -35,7 +35,7 @@ exports.getPotentialProblems = async (id) => {
 }
 
 exports.getAllClients = async () => {
-    const getAllClientsQuery = "SELECT * FROM clients ORDER BY id ASC "
+    const getAllClientsQuery = "SELECT * FROM clients ORDER BY id ASC"
     const queryResult = await pool.query(getAllClientsQuery)
     const clients = queryResult.rows
     return {clients}
@@ -75,4 +75,8 @@ exports.getClientForView = async(id) => {
     queryResult = await pool.query(getClientDevices, [id])
     const clientDevices = queryResult.rows
     return {client, clientDevices}
+}
+
+exports.find = async (clientData) => {
+    const getClientsByData = ""
 }
