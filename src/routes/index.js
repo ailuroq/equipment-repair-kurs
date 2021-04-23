@@ -1,11 +1,12 @@
-const { Router } = require('express')
-const router = Router()
+const { Router } = require('express');
 
-router.use('/clients', require('./clients'))
-router.use('/devices', require('./devices'))
-router.use('/repair-firms', require('./repairFirms'))
-router.use('/masters', require('./masters'))
-router.use('/orders', require('./orders'))
-router.use('/repairs', require('./repairs'))
+const router = Router();
 
-module.exports = router
+router.use('/clients', require('./clients'));
+router.use('/devices', require('./devices'));
+router.use('/repair-firms', require('./repairFirms'));
+router.use('/masters', require('./masters'));
+router.use('/orders', require('./orders'));
+router.use('/repairs', require('./repairs'));
+
+module.exports = router;

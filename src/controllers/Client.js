@@ -1,8 +1,7 @@
 const pool = require('./../database/pool')
 
 exports.createClient = async (lastname, firstname, middlename, phone) => {
-    const insertClientQuery = "INSERT INTO clients" +
-                              "VALUES($1, $2, $3, $4) RETURNING *"
+    const insertClientQuery = "INSERT INTO clients(lastname, firstname, middlename, phone) VALUES($1, $2, $3, $4) RETURNING *"
     const queryResult = await pool.query(insertClientQuery, [lastname, firstname, middlename, phone])
     const successInsertData = queryResult.rows[0]
     return {successInsertData}
@@ -77,6 +76,7 @@ exports.getClientForView = async(id) => {
     return {client, clientDevices}
 }
 
-exports.find = async (clientData) => {
-    const getClientsByData = ""
+exports.findClients = async (clientData) => {
+    const getClientsByData = "select * from clients where lastname=$1 or firstname=$1"
+    const queryResult = await pool.query(getClientsByData, [clientData])
 }
