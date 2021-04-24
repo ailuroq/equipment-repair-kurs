@@ -23,6 +23,7 @@
         "error",
         "never"
       ],
+      "indent": ["error", 4],
       "no-unused-vars": [
         "warn"
       ],
