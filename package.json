@@ -9,30 +9,49 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "eslintConfig": {
-    "extends": "airbnb-base",
     "env": {
-      "es6": true,
-      "browser": true
+      "commonjs": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 12
     },
     "rules": {
-      "brace-style": [
+      "keyword-spacing": "error",
+      "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
+      "indent": [
         "error",
-        "stroustrup"
+        4
       ],
-      "comma-dangle": [
+      "no-mixed-spaces-and-tabs": [
+        "error"
+      ],
+      "no-multi-spaces": [
+        "error"
+      ],
+      "space-infix-ops": "error",
+      "linebreak-style": [
         "error",
-        "never"
+        "unix"
       ],
-      "indent": ["error", 4],
-      "no-unused-vars": [
-        "warn"
+      "quotes": [
+        "error",
+        "single"
       ],
-      "no-var": [
-        "off"
+      "semi": [
+        "error",
+        "always"
       ],
-      "one-var": [
-        "off"
-      ]
+      "eqeqeq":[
+        "warn",
+        "always"
+      ],
+
+      "no-undef": 2,
+      "space-before-blocks": "error",
+      "comma-spacing": ["error", { "before": false, "after": true }]
     }
   },
   "keywords": [],

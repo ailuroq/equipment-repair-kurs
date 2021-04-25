@@ -1,7 +1,7 @@
 const express = require('express');
+const Client = require('../controllers/Client');
 
 const router = express.Router();
-const Client = require('../controllers/Client');
 
 router.get('/', async (req, res, next) => {
     try {
@@ -16,9 +16,11 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const {
-            firstname, lastname, middlename, phone
+            firstname,
+            lastname,
+            middlename,
+            phone
         } = req.body;
-        console.log(firstname);
         const result = await Client.createClient(firstname, lastname, middlename, phone);
         res.send(result);
     }
@@ -30,7 +32,10 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
     try {
         const {
-            firstname, lastname, middlename, phone
+            firstname,
+            lastname,
+            middlename,
+            phone
         } = req.body;
         const result = await Client.updateClientById(req.params.id, firstname, lastname, middlename, phone);
         res.send(result);
@@ -84,4 +89,17 @@ router.get('/problems/:id', async (req, res, next) => {
     }
 });
 
+router.get('/', async (req, res, next) => {
+    try {
+        const query = {};
+        if (req.query.lastname) query.lastname = req.query.lastname;
+        if (req.query.firstname) query.firstname = req.query.firstname;
+
+        const result = await Client.findClients(query);
+        res.send(result);
+    }
+    catch (err) {
+        next(err);
+    }
+});
 module.exports = router;

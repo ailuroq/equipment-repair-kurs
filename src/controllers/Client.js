@@ -19,15 +19,15 @@ exports.deleteClientById = async (id) => {
 
 exports.getPotentialProblems = async (id) => {
     const getProblemsInfoQuery = 'select \n'
-                                 + 'count(distinct devices.id) as devices,\n'
-                                 + 'count(distinct orders.id) as orders,\n'
-                                 + 'count(distinct repairs.id) as repairs\n'
-                                 + 'from clients\n'
-                                 + 'left join devices on clients.id = devices.client_id\n'
-                                 + 'left join orders on orders.device_id = devices.id\n'
-                                 + 'left join repairs on orders.id = repairs.order_id\n'
-                                 + 'left join work on repairs.work_id = work.id\n'
-                                 + 'where clients.id = $1';
+                               + 'count(distinct devices.id) as devices,\n'
+                               + 'count(distinct orders.id) as orders,\n'
+                               + 'count(distinct repairs.id) as repairs\n'
+                               + 'from clients\n'
+                               + 'left join devices on clients.id = devices.client_id\n'
+                               + 'left join orders on orders.device_id = devices.id\n'
+                               + 'left join repairs on orders.id = repairs.order_id\n'
+                               + 'left join work on repairs.work_id = work.id\n'
+                               + 'where clients.id = $1';
     const queryResult = await pool.query(getProblemsInfoQuery, [id]);
     const problems = queryResult.rows[0];
     return problems;
@@ -42,7 +42,7 @@ exports.getAllClients = async () => {
 
 exports.getLimitedClients = async (limit) => {
     const getClientsQuery = 'SELECT * FROM clients\n'
-                            + 'ORDER BY id ASC LIMIT $1';
+                          + 'ORDER BY id ASC LIMIT $1';
 
     const queryResult = await pool.query(getClientsQuery, [limit]);
     const clients = queryResult.rows;
@@ -76,7 +76,7 @@ exports.getClientForView = async (id) => {
 
 exports.findClients = async (clientData) => {
     const getClientsByData = 'select * from clients where lastname=$1 or firstname=$1';
-    const queryResult = await pool.query(getClientsByData, [clientData]);
+    const queryResult = await pool.query(getClientsByData, [clientData.map((x) => x.value)]);
     const clients = queryResult.rows;
     return { clients };
 };

@@ -8,6 +8,5 @@ exports.getAllOrders = async () => {
                              + 'order by id asc';
     const queryResult = await pool.query(getAllOrdersQuery);
     const orders = queryResult.rows;
-    console.log(orders);
     return orders;
 };
