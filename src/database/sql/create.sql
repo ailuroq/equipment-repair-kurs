@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS  "devices" (
 	"id" serial NOT NULL,
 	"name_id" integer,
 	"photo" varchar(255) NOT NULL,
-	"photo" varchar(255) NOT NULL,
 	"country_id" integer,
 	"brand_id" integer,
 	"client_id" integer,
@@ -132,23 +131,23 @@ CREATE TABLE IF NOT EXISTS  "brands" (
 );
 
 
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk0" FOREIGN KEY ("device_id") REFERENCES "devices"("id") ON DELETE CASCADE;
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("firm_id") REFERENCES "repair_firms"("id") ON DELETE CASCADE;
+ALTER TABLE "orders" ADD CONSTRAINT "orders_fk0" FOREIGN KEY ("device_id") REFERENCES "devices"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("firm_id") REFERENCES "repair_firms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "devices" ADD CONSTRAINT "devices_fk0" FOREIGN KEY ("country_id") REFERENCES "country"("id") ON DELETE CASCADE;
-ALTER TABLE "devices" ADD CONSTRAINT "devices_fk1" FOREIGN KEY ("brand_id") REFERENCES "brands"("id") ON DELETE CASCADE;
-ALTER TABLE "devices" ADD CONSTRAINT "devices_fk2" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE CASCADE;
-ALTER TABLE "devices" ADD CONSTRAINT "devices_fk3" FOREIGN KEY ("name_id") REFERENCES "device_names"("id") ON DELETE CASCADE;
-
-
-ALTER TABLE "repair_firms" ADD CONSTRAINT "repair_firms_fk0" FOREIGN KEY ("city_id") REFERENCES "cities"("id") ON DELETE CASCADE;
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk0" FOREIGN KEY ("country_id") REFERENCES "country"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk1" FOREIGN KEY ("brand_id") REFERENCES "brands"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk2" FOREIGN KEY ("client_id") REFERENCES "clients"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "devices" ADD CONSTRAINT "devices_fk3" FOREIGN KEY ("name_id") REFERENCES "device_names"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE;
-ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk1" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE CASCADE;
+ALTER TABLE "repair_firms" ADD CONSTRAINT "repair_firms_fk0" FOREIGN KEY ("city_id") REFERENCES "cities"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-ALTER TABLE "masters" ADD CONSTRAINT "masters_fk0" FOREIGN KEY ("firm_id") REFERENCES "repair_firms"("id") ON DELETE CASCADE;
-ALTER TABLE "masters" ADD CONSTRAINT "masters_fk1" FOREIGN KEY ("post_id") REFERENCES "posts"("id") ON DELETE CASCADE;
+ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk0" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "repairs" ADD CONSTRAINT "repairs_fk1" FOREIGN KEY ("work_id") REFERENCES "work"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+ALTER TABLE "masters" ADD CONSTRAINT "masters_fk0" FOREIGN KEY ("firm_id") REFERENCES "repair_firms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "masters" ADD CONSTRAINT "masters_fk1" FOREIGN KEY ("post_id") REFERENCES "posts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 

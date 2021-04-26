@@ -13,4 +13,14 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+router.get('/problems/:id', async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const result = await repairFirm.getPotentialProblems(id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+})
+
 module.exports = router;
