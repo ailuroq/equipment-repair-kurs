@@ -9,3 +9,12 @@ exports.getAllRepairs = async () => {
     console.log(repairs);
     return { repairs };
 };
+
+exports.deleteRepairs = async (ids) => {
+    const deleteRepairsQuery = 'delete from repairs where id=$1'
+    for (const id of ids) {
+        await pool.query(deleteRepairsQuery, [id]);
+
+    }
+    const getAllRepairsQuery = 'select * from repairs'
+}

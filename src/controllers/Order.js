@@ -10,3 +10,20 @@ exports.getAllOrders = async () => {
     const orders = queryResult.rows;
     return orders;
 };
+
+exports.getInsertOrderInfo = async () => {
+    const getFirmsQuery = 'select * from repair_firms';
+    const getDevicesQuery = 'select * from devices';
+    const queryFirmsResult = await pool.query(getFirmsQuery);
+    const firms = queryFirmsResult.rows;
+    const queryDevicesResult = await pool.query(getDevicesQuery);
+    const devices = queryDevicesResult.rows;
+    return { firms, devices }
+};
+
+exports.updateOrder = async () => {
+    const updateOrderQuery = ''
+}
+
+exports.deleteOrders = async (ids) => {
+};

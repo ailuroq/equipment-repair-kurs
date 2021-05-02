@@ -7,12 +7,14 @@ exports.createClient = async (lastname, firstname, middlename, phone) => {
     return { successInsertData };
 };
 
-exports.deleteClientById = async (id) => {
+exports.deleteClientById = async (ids) => {
     const deleteClientQuery = 'delete from clients\n'
                               + 'where id = $1';
-    let queryResult = await pool.query(deleteClientQuery, [id]);
+    for (const id of ids) {
+        await pool.query(deleteClientQuery, [id]);
+    }
     const getAllClientsQuery = 'select * from clients order by id asc';
-    queryResult = await pool.query(getAllClientsQuery);
+    const queryResult = await pool.query(getAllClientsQuery);
     const clients = queryResult.rows;
     return { clients };
 };
@@ -41,7 +43,7 @@ exports.getAllClients = async () => {
 };
 
 exports.getLimitedClients = async (limit) => {
-    const getClientsQuery = 'SELECT * FROM clients\n'
+    const getClientsQuery = 'SELECT * FROM c    lients\n'
                           + 'ORDER BY id ASC LIMIT $1';
 
     const queryResult = await pool.query(getClientsQuery, [limit]);
@@ -50,9 +52,9 @@ exports.getLimitedClients = async (limit) => {
 };
 
 exports.updateClientById = async (id, lastname, firstname, middlename, phone) => {
-    const updateClientQuery = 'UPDATE clients'
-                              + 'SET lastname = $1, firstname = $2, middlename = $3, phone = $4'
-                              + 'WHERE id = $5 RETURNING *';
+    const updateClientQuery = 'UPDATE clients\n'
+                              + 'SET lastname = $1, firstname = $2, middlename = $3, phone = $4\n'
+                              + 'WHERE id = $5';
     const queryResult = await pool.query(updateClientQuery, [lastname, firstname, middlename, phone, id]);
     const updatedClient = queryResult.rows[0];
     return { updatedClient };
@@ -75,8 +77,8 @@ exports.getClientForView = async (id) => {
 };
 
 exports.findClients = async (clientData) => {
-    const getClientsByData = 'select * from clients where lastname=$1 or firstname=$1';
-    const queryResult = await pool.query(getClientsByData, [clientData.map((x) => x.value)]);
+    const getClientsByData = 'select * from clients where lastname like $1 or firstname like $1';
+    const queryResult = await pool.query(getClientsByData, [clientData + '%']);
     const clients = queryResult.rows;
     return { clients };
 };
