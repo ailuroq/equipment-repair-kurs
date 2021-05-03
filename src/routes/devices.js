@@ -15,9 +15,19 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+router.get('/delete/info/:id', async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const result = await Device.getPotentialDataToDelete(id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 router.post('/delete', async (req, res, next) => {
     try {
-        const ids = req.body.ids;
+        const { ids } = req.body;
         const result = await Device.deleteDevicesById(ids);
         res.send(result);
     } catch (err) {
@@ -66,6 +76,7 @@ router.get('/edit-info/:id', async (req, res, next) => {
 
 router.post('/update-photo/:id', uploadFileMiddleware, async (req, res, next) => {
     try {
+        res.send(200);
     } catch (err) {
         next(err);
     }
@@ -75,6 +86,16 @@ router.post('/update/:id', async (req, res, next) => {
     try {
         const {id} = req.params;
         const result = await Device.updateDeviceById(id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/search', async (req, res, next) => {
+    try {
+        const {brand, name} = req.query;
+        const result = await Device.findDevices(brand, name);
         res.send(result);
     } catch (err) {
         next(err);

@@ -35,7 +35,7 @@ exports.getUpdateDeviceInfo = async (id) => {
                                 'inner join brands on brands.id = devices.brand_id\n' +
                                 'where devices.id = $1\n';
     const defaultQueryResult = await pool.query(getDefaultDataQuery, [id]);
-    const defaultData = defaultQueryResult.rows;
+    const defaultData = defaultQueryResult.rows[0];
     const getNamesQuery = 'select * from device_names';
     const queryNamesResult = await pool.query(getNamesQuery);
     const names = queryNamesResult.rows;
@@ -53,23 +53,46 @@ exports.getUpdateDeviceInfo = async (id) => {
 
 exports.updateDeviceById = async (id, name, country, photo, client, brand, model) => {
     const updateDeviceQuery = 'UPDATE devices\n'
-        + 'SET name=$1, country=$2, photo=$3, client=$4, brand=$5, model=$6\n' +
+        + 'SET name_id=$1, country_id=$2, photo=$3, client_id=$4, brand_id=$5, model=$6\n' +
         'WHERE id=$7';
     await pool.query(updateDeviceQuery, [name, country, photo, client, brand, model, id]);
+};
+
+exports.getPotentialDataToDelete = async (id) => {
+    const getOrdersAndRepairsQuery = 'select count(distinct orders.id) as orders, count(distinct repairs.id) as repairs, clients.id as client from devices\n' +
+                                     'inner join clients on clients.id = devices.client_id\n' +
+                                     'inner join orders on devices.id = orders.device_id\n' +
+                                     'inner join repairs on orders.id = repairs.order_id\n' +
+                                     'where devices.id = $1' +
+                                     'group by clients.id';
+    let queryResult = await pool.query(getOrdersAndRepairsQuery, [id]);
+    const orders = queryResult.rows[0].orders;
+    const repairs = queryResult.rows[0].repairs;
+    const clients = queryResult.rows[0].client;
+    const checkClientQuery = 'select count(distinct devices.id) from clients\n' +
+                             'left join devices on clients.id = devices.client_id\n' +
+                             'where clients.id = $1';
+    queryResult = await pool.query(checkClientQuery, [clients]);
+    let client;
+    if (queryResult.rows[0].count > 1) {
+        client = queryResult.rows[0].count;
+    }
+    return {orders, repairs, client};
 };
 
 exports.deleteDevicesById = async (ids) => {
     const deleteDevicesQuery = 'delete from devices where id = $1';
     for (const id of ids) {
+        const client = 'select clients.id from devices\n' +
+            'inner join clients on clients.id = devices.client_id\n' +
+            'where devices.id = $1';
+        const checkQueryResult = await pool.query(client, [queryResult.client]);
+        console.log(checkQueryResult);
         await pool.query(deleteDevicesQuery, [id]);
-        const checkClientQuery = 'select count(distinct devices.id) from clients\n' +
-            'left join devices on clients.id = client_id\n' +
-            'where clients.id = $1\n' +
-            'group by devices.id';
-        const checkQueryResult = await pool.query(checkClientQuery, [queryResult.client]);
-        if (!checkQueryResult.id) {
+        /* if (!checkQueryResult.id) {
             const deleteClient = 'delete from clients where id = $1';
-        }
+            await pool.query(deleteClient, [])
+        }*/
     }
     const getAllDevicesQuery = 'select devices.id as id, clients.id as client, country.name as country, brands.name as brand, device_names.name as name, model from devices\n'
                              + 'left join country on country.id = devices.country_id\n'
@@ -118,3 +141,15 @@ exports.insertDevice = async (name, countryId, photo, clientId, brandId, model) 
     return {device};
 };
 
+exports.findDevices = async (brand, name) => {
+    const findDevicesQuery = 'select devices.id, device_names.name as name, country.name as country, brands.name as brand, model, clients.lastname as lastname, clients.id as client from devices\n' +
+                             'inner join device_names on devices.name_id = device_names.id\n' +
+                             'inner join brands on devices.brand_id = brands.id\n' +
+                             'inner join country on country.id = devices.country_id\n' +
+                             'inner join clients on clients.id = devices.client_id\n' +
+                             'where device_names.name like $1\n' +
+                             'or brands.name like $2';
+    const queryResult = await pool.query(findDevicesQuery, [name + '%', brand + '%']);
+    const devices = queryResult.rows;
+    return {devices};
+};
