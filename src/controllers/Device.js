@@ -42,7 +42,7 @@ exports.getUpdateDeviceInfo = async (id) => {
     const getCountriesQuery = 'select * from country';
     const queryCountriesResult = await pool.query(getCountriesQuery);
     const countries = queryCountriesResult.rows;
-    const getClientsQuery = 'select * from clients';
+    const getClientsQuery = 'select * from clients order by id asc';
     const queryClientsResult = await pool.query(getClientsQuery);
     const clients = queryClientsResult.rows;
     const getBrandsQuery = 'select * from brands';
