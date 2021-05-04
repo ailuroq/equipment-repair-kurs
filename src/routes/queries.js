@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const Query = require('../controllers/Query');
+const ThirdQuery = require('../controllers/ThirdQuery');
 
 router.get('/first', async (req, res, next) => {
     try {
@@ -23,9 +23,13 @@ router.get('/second', async (req, res, next) => {
 
 router.get('/third', async (req, res, next) => {
     try {
-        const result = await Query.thirdQuery();
+        const {month, year} = req.query;
+        const result = await ThirdQuery.getTableByQuery(month, year);
+        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);
     }
 });
+
+module.exports = router;

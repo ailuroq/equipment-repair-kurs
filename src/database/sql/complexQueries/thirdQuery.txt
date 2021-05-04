@@ -1,6 +1,8 @@
-select sum(work.price),count(*), repair_firms.id, repair_firms.name from work
-left join repairs on work_id = work.id
-left join orders on order_id = orders.id
-left join repair_firms on firm_id = repair_firms.id
-where extract(month from orders.order_date) = 1
-group by work.price, repair_firms.id, repair_firms.name
+select sum(work.price),count(*) as works,orders.order_date, repair_firms.id as firm, repair_firms.name from repair_firms
+inner join orders on firm_id = repair_firms.id
+inner join repairs on order_id = orders.id
+inner join work on repairs.work_id = work.id
+where extract(month from orders.order_date) = 1 and
+extract(year from orders.order_date) = 2020
+group by repair_firms.id, orders.order_date
+order by repair_firms.id asc

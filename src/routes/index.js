@@ -18,5 +18,5 @@ router.use('/posts', require('./posts'));
 router.use('/works', require('./works'));
 
 //queries tables
-
+router.use('/complex-queries', require('./queries'));
 module.exports = router;
