@@ -1,8 +1,8 @@
 1 часть
-select round(avg(experience)) as avgExp, repair_firms.name from masters
-join repair_firms on firm_id = repair_firms.id
-group by repair_firms.name
-order by avgExp desc
+select repair_firms.id, repair_firms.name, round(avg(experience)) as avgExp from repair_firms
+inner join masters on masters.firm_id = repair_firms.id
+group by repair_firms.id
+order by repair_firms.id
 
 2 часть
 select round(avg(experience)) as avgExp from masters
