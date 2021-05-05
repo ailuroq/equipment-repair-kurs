@@ -5,14 +5,11 @@ exports.getTableByQuery = async () => {
                   'inner join masters on masters.firm_id = repair_firms.id\n' +
                   'group by repair_firms.id\n' +
                   'order by repair_firms.id';
-    const queryResult = await pool.query(query);
+    let queryResult = await pool.query(query);
     const table = queryResult.rows;
-    return {table};
+    const query2 = 'select round(avg(experience)) as avgExp from masters';
+    queryResult = await pool.query(query2);
+    const avg = queryResult.rows[0].avgexp;
+    return {table, avg};
 };
 
-exports.getTableByQuery2 = async () => {
-    const query = 'select round(avg(experience)) as avgExp from masters'
-    const queryResult = await pool.query(query);
-    const table = queryResult.rows;
-    return {table};
-}
