@@ -12,7 +12,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/', async (req, req, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const name = req.body.name;
         const result = await City.createCity(name);
