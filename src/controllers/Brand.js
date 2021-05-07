@@ -16,6 +16,28 @@ exports.createBrand = async (name) => {
 
 exports.deleteBrands = async (ids) => {
     const deleteBrandQuery = 'delete from brands where id=$1';
+    for (const id of ids) {
+        await pool.query(deleteBrandQuery, [id]);
+    }
+    const getAllBrandsQuery = 'select * from brands';
+    const queryAllResult = await pool.query(getAllBrandsQuery);
+    const brands = queryAllResult.rows;
+    return {brands};
+};
+
+exports.getPotentialProblems = async (id) => {
+    const getPotentialProblemsQuery = 'select \n' +
+        'count(distinct devices.id) as devices,\n' +
+        'count(distinct orders.id) as orders,\n' +
+        'count(distinct repairs.id) as repairs\n' +
+        'from country\n' +
+        'inner join devices on devices.brand_id = brands.id\n' +
+        'inner join orders on orders.device_id = devices.id\n' +
+        'inner join repairs on repairs.order_id = orders.id\n' +
+        'where country.id = $1';
+    const queryResult = await pool.query(getPotentialProblemsQuery, [id]);
+    const problems = queryResult.rows;
+    return {problems};
 };
 
 exports.updateBrand = async (id, name) => {

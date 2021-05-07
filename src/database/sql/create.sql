@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "orders"(
 	"completion_date" DATE,
 	"order_completed" BOOLEAN NOT NULL,
 	"device_id" integer,
-	"firm_id" integer,
+	"master_id" integer,
 	CONSTRAINT "orders_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS  "repairs" (
 	"order_id" integer NOT NULL,
 	"work_id" integer NOT NULL,
 	"completion" BOOLEAN NOT NULL,
+	"price" integer NOT NULL,
 	CONSTRAINT "repairs_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -92,7 +93,6 @@ CREATE TABLE IF NOT EXISTS  "work" (
 	"id" serial NOT NULL,
 	"type" VARCHAR(255) NOT NULL,
 	"description" VARCHAR(255) NOT NULL,
-	"price" FLOAT NOT NULL,
 	CONSTRAINT "work_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS  "brands" (
 
 
 ALTER TABLE "orders" ADD CONSTRAINT "orders_fk0" FOREIGN KEY ("device_id") REFERENCES "devices"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("firm_id") REFERENCES "repair_firms"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "orders" ADD CONSTRAINT "orders_fk1" FOREIGN KEY ("master_id") REFERENCES "masters"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "devices" ADD CONSTRAINT "devices_fk0" FOREIGN KEY ("country_id") REFERENCES "country"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "devices" ADD CONSTRAINT "devices_fk1" FOREIGN KEY ("brand_id") REFERENCES "brands"("id") ON DELETE CASCADE ON UPDATE CASCADE;

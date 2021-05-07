@@ -16,10 +16,28 @@ exports.createPost = async (name) => {
 
 exports.deletePosts = async (ids) => {
     const deletePostsQuery = 'delete from posts where id=$1';
+    for (const id of ids) {
+        await pool.query(deletePostsQuery, [id]);
+    }
+    const getAllQuery = 'select * from posts';
+    const getAllResult = await pool.query(getAllQuery);
+    const posts = getAllResult.rows[0];
+    return {posts};
 };
 
 exports.getPotentialCountryDataToDelete = async (id) => {
-
+    const getPotentialDeletePostQuery = 'select\n' +
+        'count(distinct masters.id) as masters,\n' +
+        'count(distinct orders.id) as orders,\n' +
+        'count(distinct repairs.id) as repairs\n' +
+        'from posts\n' +
+        'inner join masters on posts.id = masters.post_id\n' +
+        'inner join orders on orders.master_id = masters.id\n' +
+        'inner join repairs on repairs.order_id = orders.id\n' +
+        'where posts.id = $1';
+    const queryResult = await pool.query(getPotentialDeletePostQuery, [id]);
+    const problems = queryResult.rows;
+    return {problems};
 };
 
 exports.updatePost = async (id, name) => {

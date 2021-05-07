@@ -10,17 +10,17 @@ exports.ordersGeneration = async () => {
         let resultQuery = await pool.query(countDevices);
         const numberOfOrders = resultQuery.rows[0].exact_count;
 
-        const countFirmsQuery = 'SELECT count(*) AS exact_count FROM repair_firms;';
-        resultQuery = await pool.query(countFirmsQuery);
-        const numberOfFirms = resultQuery.rows[0].exact_count;
+        const countMastersQuery = 'SELECT count(*) AS exact_count FROM masters;';
+        resultQuery = await pool.query(countMastersQuery);
+        const numberOfMasters = resultQuery.rows[0].exact_count;
 
         let orderDate;
         let completionDate;
         let isCompleted = false;
         let deviceId;
-        let firmId;
+        let masterId;
 
-        const insertOrdersQuery = 'INSERT INTO orders(receipt_number, order_date, completion_date, order_completed, device_id, firm_id) '
+        const insertOrdersQuery = 'INSERT INTO orders(receipt_number, order_date, completion_date, order_completed, device_id, master_id) '
             + 'VALUES($1, $2, $3, $4, $5, $6) returning *';
 
         for (let i = 1; i <= numberOfOrders; i++) {
@@ -33,11 +33,11 @@ exports.ordersGeneration = async () => {
                 completionDate = getDateMoreThan(orderDate);
             }
             deviceId = i;
-            if (i <= numberOfFirms) {
-                firmId = i;
+            if (i <= numberOfMasters) {
+                masterId = i;
             }
             else {
-                firmId = Math.floor(Math.random() * numberOfFirms) + 1;
+                masterId = Math.floor(Math.random() * numberOfMasters) + 1;
             }
 
             const values = [
@@ -46,7 +46,7 @@ exports.ordersGeneration = async () => {
                 completionDate,
                 isCompleted,
                 deviceId,
-                firmId
+                masterId
             ];
             console.log(values);
             await pool.query(insertOrdersQuery, values, (err) => {

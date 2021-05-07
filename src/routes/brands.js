@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     try {
-        const name = req.body;
+        const name = req.body.name;
         const result = await Brand.createBrand(name);
         res.send(result);
     } catch (err) {
@@ -43,6 +43,15 @@ router.post('/update/:id', async (req, res, next) => {
     }
 });
 
+router.post('/problems/:id', async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const result = await Brand.getPotentialProblems(id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 module.exports = router;

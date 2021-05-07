@@ -1,4 +1,4 @@
-const pool = require('../database/pool')
+const pool = require('../database/pool');
 
 exports.getTableByQuery = async () => {
     const query = 'select repair_firms.id, repair_firms.name, round(avg(experience)) as avgExp from repair_firms\n' +

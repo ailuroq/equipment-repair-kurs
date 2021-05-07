@@ -2,12 +2,14 @@ const express = require('express');
 
 const router = express.Router();
 
+const FirstQuery = require('../controllers/FirstQuery');
 const SecondQuery = require('../controllers/SecondQuery');
 const ThirdQuery = require('../controllers/ThirdQuery');
 
 router.get('/first', async (req, res, next) => {
     try {
-        const result = await Query.firstQuery();
+        const firmId = req.query.firmId;
+        const result = await FirstQuery.getTableByQuery(firmId);
         res.send(result);
     } catch (err) {
         next(err);
