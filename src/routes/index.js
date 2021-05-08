@@ -16,7 +16,10 @@ router.use('/cities', require('./cities'));
 router.use('/countries', require('./countries'));
 router.use('/posts', require('./posts'));
 router.use('/works', require('./works'));
+router.use('/device-names', require('./deviceNames'));
 
 //queries tables
 router.use('/complex-queries', require('./queries'));
+
+
 module.exports = router;
