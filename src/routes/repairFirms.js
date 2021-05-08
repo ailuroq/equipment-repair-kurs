@@ -86,7 +86,7 @@ router.get('/problems/:id', async (req, res, next) => {
     }
 });
 
-router.post('/update', async (req, res, next) => {
+router.put('/update', async (req, res, next) => {
     try {
         const {id, name, address, phone, cityId} = req.body;
         const result = await repairFirm.updateFirmById(id, name, address, phone, cityId);

@@ -21,7 +21,7 @@ exports.deleteBrands = async (ids) => {
     }
     const getAllBrandsQuery = 'select * from brands';
     const queryAllResult = await pool.query(getAllBrandsQuery);
-    const brands = queryAllResult.rows;
+    const brands = queryAllResult.rows[0];
     return {brands};
 };
 
