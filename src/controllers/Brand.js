@@ -47,3 +47,10 @@ exports.updateBrand = async (id, name) => {
     const updatedBrand = queryResult.rows[0];
     return {updatedBrand};
 };
+
+exports.findBrands = async (id, name) => {
+    const findBrandsQuery = 'select * from brands where id=$1 or name ilike $2';
+    const queryResult = await pool.query(findBrandsQuery, [id, name + '$']);
+    const brands = queryResult.rows[0];
+    return {brands};
+};

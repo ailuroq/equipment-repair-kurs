@@ -47,3 +47,10 @@ exports.updatePost = async (id, name) => {
     const updatedPost = queryResult.rows[0];
     return {updatedPost};
 };
+
+exports.findPosts = async (id, name) => {
+    const findPostsQuery = 'select * from posts where id=$1 or name ilike $2';
+    const queryResult = await pool.query(findPostsQuery, [id, name + '$']);
+    const posts = queryResult.rows[0];
+    return {posts};
+};

@@ -47,3 +47,10 @@ exports.updateDeviceName = async (id, name) => {
     const updatedDeviceName = queryResult.rows[0];
     return {updatedDeviceName};
 };
+
+exports.findDeviceNames = async (id, name) => {
+    const findDeviceNamesQuery = 'select * from device_names where id=$1 or name ilike $2';
+    const queryResult = await pool.query(findDeviceNamesQuery, [id, name + '$']);
+    const deviceNames = queryResult.rows[0];
+    return {deviceNames};
+};

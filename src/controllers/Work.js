@@ -28,7 +28,7 @@ exports.deleteWorks = async (ids) => {
 exports.getPotentialCountryDataToDelete = async (id) => {
     const getPotentialProblemsQuery = 'select count(distinct repairs.id) from work\n' +
         'inner join repairs on repairs.work_id = work.id\n' +
-        'where work.id = $1'
+        'where work.id = $1';
     const queryResult = await pool.query(getPotentialProblemsQuery, [id]);
     const problems = queryResult.rows;
     return {problems};
@@ -40,4 +40,11 @@ exports.updateWork = async (id, name) => {
     const queryResult = await pool.query(updateWorkQuery, [id, name]);
     const updatedWork = queryResult.rows[0];
     return {updatedWork};
+};
+
+exports.findWorks = async (id, name) => {
+    const findWorksQuery = 'select * from work where id=$1 or name ilike $2';
+    const queryResult = await pool.query(findWorksQuery, [id, name + '$']);
+    const works = queryResult.rows[0];
+    return {works};
 };

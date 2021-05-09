@@ -1,8 +1,9 @@
 const pool = require('../database/pool');
 
-exports.createDevice = async () => {
-    const insertDeviceQuery = '';
-    const queryResult = await pool.query(insertDeviceQuery, []);
+exports.createDevice = async (name, photo, clientId, countryId, brandId, model) => {
+    const insertDeviceQuery = 'insert into devices(name, photo, client_id, country_id, brand_id, model)\n' +
+        'values($1,$2,$3,$4,$5,$6)';
+    const queryResult = await pool.query(insertDeviceQuery, [name, photo, clientId, countryId, brandId, model]);
     const successInsertData = queryResult.rows[0];
     return { successInsertData };
 };
@@ -135,3 +136,4 @@ exports.findDevices = async (brand, name) => {
     const devices = queryResult.rows;
     return {devices};
 };
+

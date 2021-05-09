@@ -49,3 +49,10 @@ exports.updateCity = async (id, name) => {
     const updatedCity = queryResult.rows[0];
     return {updatedCity};
 };
+
+exports.findCities = async (id, name) => {
+    const findCitiesQuery = 'select * from cities where id=$1 or name ilike $2';
+    const queryResult = await pool.query(findCitiesQuery, [id, name + '$']);
+    const cities = queryResult.rows[0];
+    return {cities};
+};

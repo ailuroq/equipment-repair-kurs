@@ -24,6 +24,24 @@ exports.getFirmForView = async (id) => {
     return firm;
 };
 
+exports.getInsertFirmInfo = async () => {
+    const getCitiesQuery = 'select * from cities order by id asc';
+    const queryResult = await pool.query(getCitiesQuery);
+    const cities = queryResult.rows[0];
+    return {cities};
+};
+
+
+exports.getUpdateFirmInfo = async (id) => {
+    const getCurrentFirmData = 'select * from repair_firms where id=$1';
+    const getCurrentQueryResult = await pool.query(getCurrentFirmData, [id]);
+    const current = getCurrentQueryResult.rows[0];
+    const getCitiesQuery = 'select * from cities order by id asc';
+    const queryResult = await pool.query(getCitiesQuery);
+    const cities = queryResult.rows[0];
+    return {current, cities};
+};
+
 exports.updateFirmById = async (id, name, address, phone, cityId) => {
     const updateFirmQuery = 'update repair_firms\n' +
         'set name=$1, address=$2, phone=$3, city_id=$4\n' +
