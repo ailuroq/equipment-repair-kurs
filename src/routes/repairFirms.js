@@ -35,22 +35,10 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.put('/:id', async (req, res, next) => {
-    try {
-        const {
-            name, address, phone, cityId
-        } = req.body;
-        const result = await repairFirm.updateFirmById(req.params.id, name, address, phone, cityId);
-        res.send(result);
-    } catch (err) {
-        next(err);
-    }
-});
-
 router.get('/search', async (req, res, next) => {
     try {
-        const {name, address} = req.query;
-        const result = await repairFirm.findFirms(name, address);
+        const {findData} = req.query;
+        const result = await repairFirm.findFirms(findData);
         res.send(result);
     } catch (err) {
         next(err);
@@ -60,6 +48,7 @@ router.get('/search', async (req, res, next) => {
 router.get('/info/:id', async (req, res, next) => {
     try {
         const result = await repairFirm.getFirmForView(req.params.id);
+        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);
@@ -90,6 +79,25 @@ router.put('/update', async (req, res, next) => {
     try {
         const {id, name, address, phone, cityId} = req.body;
         const result = await repairFirm.updateFirmById(id, name, address, phone, cityId);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/update/info/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const result = await repairFirm.getUpdateFirmInfo(id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/new', async (req, res, next) => {
+    try {
+        const result = await repairFirm.getInsertFirmInfo();
         res.send(result);
     } catch (err) {
         next(err);
