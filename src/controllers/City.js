@@ -3,7 +3,7 @@ const pool = require('../database/pool');
 exports.getAllCities = async () => {
     const getAllCitiesQuery = 'select * from cities order by id asc';
     const queryResult = await pool.query(getAllCitiesQuery);
-    const cities = queryResult.rows[0];
+    const cities = queryResult.rows;
     return {cities};
 };
 

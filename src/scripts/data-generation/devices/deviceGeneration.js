@@ -55,7 +55,7 @@ exports.deviceGeneration = async () => {
 
         for (let i = 1; i <= numberOfDevices; i++) {
             const randomNumber = Math.floor(Math.random() * photos.length);
-            let requestData = await pool.query(getRandomDeviceNameQuery, [randomNumber]);
+            let requestData = await pool.query(getRandomDeviceNameQuery, [randomNumber+1]);
 
             nameId = requestData.rows[0].id;
             requestData = await pool.query(getRandomCountryNameQuery);

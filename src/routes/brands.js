@@ -25,6 +25,7 @@ router.post('/', async (req, res, next) => {
 router.post('/delete', async (req, res, next) => {
     try {
         const {ids} = req.body;
+        console.log(ids)
         const result = await Brand.deleteBrands(ids);
         res.send(result);
     } catch (err) {

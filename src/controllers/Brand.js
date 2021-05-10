@@ -3,7 +3,7 @@ const pool = require('../database/pool');
 exports.getAllBrands = async () => {
     const getAllBrandsQuery = 'select * from brands order by id asc';
     const queryResult = await pool.query(getAllBrandsQuery);
-    const brands = queryResult.rows[0];
+    const brands = queryResult.rows;
     return {brands};
 };
 
@@ -21,7 +21,7 @@ exports.deleteBrands = async (ids) => {
     }
     const getAllBrandsQuery = 'select * from brands';
     const queryAllResult = await pool.query(getAllBrandsQuery);
-    const brands = queryAllResult.rows[0];
+    const brands = queryAllResult.rows;
     return {brands};
 };
 
@@ -30,22 +30,24 @@ exports.getPotentialProblems = async (id) => {
         'count(distinct devices.id) as devices,\n' +
         'count(distinct orders.id) as orders,\n' +
         'count(distinct repairs.id) as repairs\n' +
-        'from country\n' +
+        'from brands\n' +
         'inner join devices on devices.brand_id = brands.id\n' +
         'inner join orders on orders.device_id = devices.id\n' +
         'inner join repairs on repairs.order_id = orders.id\n' +
-        'where country.id = $1';
+        'where brands.id = $1';
     const queryResult = await pool.query(getPotentialProblemsQuery, [id]);
-    const problems = queryResult.rows;
-    return {problems};
+    const problems = queryResult.rows[0];
+    return problems;
 };
 
 exports.updateBrand = async (id, name) => {
     const updateBrandQuery = 'update brands\n' +
         'set name=$1 where id=$2';
-    const queryResult = await pool.query(updateBrandQuery, [id, name]);
-    const updatedBrand = queryResult.rows[0];
-    return {updatedBrand};
+    await pool.query(updateBrandQuery, [name, id]);
+    const getAllBrandsQuery = 'select * from brands order by id asc';
+    const queryResult = await pool.query(getAllBrandsQuery);
+    const brands = queryResult.rows;
+    return {brands};
 };
 
 exports.findBrands = async (id, name) => {
