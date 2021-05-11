@@ -53,6 +53,16 @@ router.post('/problems/:id', async (req, res, next) => {
     }
 });
 
+router.get('/search', async (req, res, next) => {
+    try {
+        const data = req.query.data;
+        const result = await Country.findCountries(data);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 
 module.exports = router;

@@ -3,7 +3,7 @@ const pool = require('../database/pool');
 exports.getAllCountries = async () => {
     const getAllCountriesQuery = 'select * from country order by id asc';
     const queryResult = await pool.query(getAllCountriesQuery);
-    const countries = queryResult.rows[0];
+    const countries = queryResult.rows;
     return {countries};
 };
 
@@ -32,14 +32,21 @@ exports.getPotentialCountryDataToDelete = async (id) => {
         'inner join repairs on repairs.order_id = orders.id\n' +
         'where country.id = $1';
     const queryResult = await pool.query(getPotentialProblemsQuery, [id]);
-    const problems = queryResult.rows;
+    const problems = queryResult.rows[0];
     return { problems };
 };
 
 exports.updateCountry = async (id, name) => {
     const updateCountryQuery = 'update country\n' +
         'set name=$1 where id=$2';
-    const queryResult = await pool.query(updateCountryQuery, [id, name]);
+    const queryResult = await pool.query(updateCountryQuery, [name, id]);
     const updatedCountry = queryResult.rows[0];
     return {updatedCountry};
+};
+
+exports.findCountries = async (data) => {
+    const findCountriesQuery = 'select * from country where  name ilike $1';
+    const queryResult = await pool.query(findCountriesQuery, [data + '%']);
+    const countries = queryResult.rows;
+    return {countries};
 };

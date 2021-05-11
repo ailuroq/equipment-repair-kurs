@@ -3,7 +3,7 @@ const pool = require('../database/pool');
 exports.getAllWorks = async () => {
     const getAllWorksQuery = 'select * from work order by id asc';
     const queryResult = await pool.query(getAllWorksQuery);
-    const works = queryResult.rows[0];
+    const works = queryResult.rows;
     return {works};
 };
 
@@ -36,7 +36,7 @@ exports.getPotentialCountryDataToDelete = async (id) => {
 
 exports.updateWork = async (id, name) => {
     const updateWorkQuery = 'update work\n' +
-        'set name=$1 where id=$2';
+        'set =$1 where id=$2';
     const queryResult = await pool.query(updateWorkQuery, [id, name]);
     const updatedWork = queryResult.rows[0];
     return {updatedWork};

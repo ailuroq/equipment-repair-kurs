@@ -51,12 +51,6 @@ exports.updateBrand = async (id, name) => {
 };
 
 exports.findBrands = async (data) => {
-    if (!data) {
-        const getAllBrandsQuery = 'select * from brands order by id asc';
-        const queryResult = await pool.query(getAllBrandsQuery);
-        const brands = queryResult.rows;
-        return {brands};
-    }
     const findBrandsQuery = 'select * from brands where name ilike $1';
     const queryResult = await pool.query(findBrandsQuery, [data + '%']);
     const brands = queryResult.rows;

@@ -3,7 +3,7 @@ const pool = require('../database/pool');
 exports.getAllPosts = async () => {
     const getAllPostsQuery = 'select * from posts order by id asc';
     const queryResult = await pool.query(getAllPostsQuery);
-    const posts = queryResult.rows[0];
+    const posts = queryResult.rows;
     return {posts};
 };
 
@@ -21,7 +21,7 @@ exports.deletePosts = async (ids) => {
     }
     const getAllQuery = 'select * from posts';
     const getAllResult = await pool.query(getAllQuery);
-    const posts = getAllResult.rows[0];
+    const posts = getAllResult.rows;
     return {posts};
 };
 
@@ -36,21 +36,21 @@ exports.getPotentialCountryDataToDelete = async (id) => {
         'inner join repairs on repairs.order_id = orders.id\n' +
         'where posts.id = $1';
     const queryResult = await pool.query(getPotentialDeletePostQuery, [id]);
-    const problems = queryResult.rows;
+    const problems = queryResult.rows[0];
     return {problems};
 };
 
 exports.updatePost = async (id, name) => {
     const updatePostQuery = 'update posts\n' +
         'set name=$1 where id=$2';
-    const queryResult = await pool.query(updatePostQuery, [id, name]);
+    const queryResult = await pool.query(updatePostQuery, [name, id]);
     const updatedPost = queryResult.rows[0];
     return {updatedPost};
 };
 
-exports.findPosts = async (id, name) => {
-    const findPostsQuery = 'select * from posts where id=$1 or name ilike $2';
-    const queryResult = await pool.query(findPostsQuery, [id, name + '$']);
-    const posts = queryResult.rows[0];
+exports.findPosts = async (name) => {
+    const findPostsQuery = 'select * from posts where name ilike $1';
+    const queryResult = await pool.query(findPostsQuery, [name + '%']);
+    const posts = queryResult.rows;
     return {posts};
 };
