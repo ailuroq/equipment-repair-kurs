@@ -25,7 +25,6 @@ router.post('/', async (req, res, next) => {
 router.post('/delete', async (req, res, next) => {
     try {
         const {ids} = req.body;
-        console.log(ids)
         const result = await Brand.deleteBrands(ids);
         res.send(result);
     } catch (err) {
@@ -47,12 +46,23 @@ router.post('/update/:id', async (req, res, next) => {
 router.post('/problems/:id', async (req, res, next) => {
     try {
         const {id} = req.params;
+        console.log(id)
         const result = await Brand.getPotentialProblems(id);
+        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);
     }
 });
 
+router.get('/search', async (req, res, next) => {
+    try {
+        const data = req.query.data;
+        const result = await Brand.findBrands(data);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
 
 module.exports = router;

@@ -17,4 +17,4 @@ const fullGeneration = async (numberOfClients) => {
     });
 };
 
-fullGeneration(10000);
+fullGeneration(1500);

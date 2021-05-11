@@ -38,21 +38,27 @@ exports.getPotentialCityDataToDelete = async (id) => {
                                 'inner join repairs on repairs.order_id = orders.id\n' +
                                 'where cities.id = $1';
     const queryResult = await pool.query(getPotentialDataQuery, [id]);
-    const problems = queryResult.rows;
+    const problems = queryResult.rows[0];
     return {problems};
 };
 
 exports.updateCity = async (id, name) => {
     const updateCityQuery = 'update cities\n' +
         'set name=$1 where id=$2';
-    const queryResult = await pool.query(updateCityQuery, [id, name]);
+    const queryResult = await pool.query(updateCityQuery, [name, id]);
     const updatedCity = queryResult.rows[0];
     return {updatedCity};
 };
 
-exports.findCities = async (id, name) => {
-    const findCitiesQuery = 'select * from cities where id=$1 or name ilike $2';
-    const queryResult = await pool.query(findCitiesQuery, [id, name + '$']);
-    const cities = queryResult.rows[0];
+exports.findCities = async (name) => {
+    if (!name) {
+        const getAllCitiesQuery = 'select * from cities order by id asc';
+        const queryResult = await pool.query(getAllCitiesQuery);
+        const cities = queryResult.rows;
+        return {cities};
+    }
+    const findCitiesQuery = 'select * from cities where name ilike $1';
+    const queryResult = await pool.query(findCitiesQuery, [name + '%']);
+    const cities = queryResult.rows;
     return {cities};
 };

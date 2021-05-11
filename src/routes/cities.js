@@ -43,10 +43,20 @@ router.post('/update/:id', async (req, res, next) => {
     }
 });
 
-router.post('/problems/:id', async (req, res, next) => {
+router.get('/problems/:id', async (req, res, next) => {
     try {
         const {id} = req.params;
         const result = await City.getPotentialCityDataToDelete(id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/search', async (req, res, next) => {
+    try {
+        const data = req.query.data;
+        const result = await City.findCities(data);
         res.send(result);
     } catch (err) {
         next(err);
