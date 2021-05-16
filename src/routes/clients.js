@@ -21,7 +21,7 @@ router.post('/', async (req, res, next) => {
             middlename,
             phone
         } = req.body;
-        const result = await Client.createClient(firstname, lastname, middlename, phone);
+        const result = await Client.createClient(lastname, firstname, middlename, phone);
         res.send(result);
     }
     catch (err) {

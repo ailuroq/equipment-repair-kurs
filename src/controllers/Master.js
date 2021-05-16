@@ -1,7 +1,7 @@
 const pool = require('../database/pool');
 
 exports.getAllMasters = async () => {
-    const getAllMastersQuery = 'select masters.id, lastname, firstname, middlename, experience, posts.name as post from masters\n'
+    const getAllMastersQuery = 'select masters.id, lastname, firstname, middlename, experience, repair_firms.name as firm, posts.name as post from masters\n'
                              + 'left join posts on posts.id = post_id\n'
                              + 'left join repair_firms on repair_firms.id = firm_id';
     const queryResult = await pool.query(getAllMastersQuery);
@@ -50,10 +50,10 @@ exports.updateMaster = async (id, lastname, firstname, middlename, experience, f
 };
 
 exports.findMasters = async (data) => {
-    const getAllMastersQuery = 'select masters.id, lastname, firstname, middlename, experience, posts.name as post from masters\n'
+    const getAllMastersQuery = 'select masters.id, lastname, firstname, middlename, experience, repair_firms.name as firm, posts.name as post from masters\n'
         + 'left join posts on posts.id = post_id\n'
-        + 'left join repair_firms on repair_firms.id = firm_id\n' +
-        'where lastname ilike $1 or experience=$1';
+        + 'inner join repair_firms on repair_firms.id = masters.firm_id\n' +
+        'where lastname ilike $1 or firstname ilike $1';
     const queryResult = await pool.query(getAllMastersQuery, [data + '%']);
     const masters = queryResult.rows;
     return {masters};
@@ -64,18 +64,15 @@ exports.deleteMasterById = async (ids) => {
     for (const id of ids) {
         await pool.query(deleteMaster, [id]);
     }
-    const getAllMastersQuery = 'select * from masters order by id asc';
-    const queryResult = await pool.query(getAllMastersQuery);
-    const masters = queryResult.rows;
-    return {masters};
 };
 
 exports.getMasterForView = async (id) => {
     const getMasterById = 'select masters.id, lastname, firstname, middlename, experience, repair_firms.name as firm, posts.name as post from masters\n' +
                           'left join repair_firms on repair_firms.id = firm_id\n' +
-                          'left join posts on posts.id = post_id';
+                          'left join posts on posts.id = post_id\n' +
+                          'where masters.id = $1';
     const queryResult = await pool.query(getMasterById, [id]);
-    const master = queryResult.rows;
+    const master = queryResult.rows[0];
     return {master};
 };
 

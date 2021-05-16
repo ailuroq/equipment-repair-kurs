@@ -9,8 +9,8 @@ let storage = multer.diskStorage({
     },
     filename: async (req, file, cb) => {
         const filename = Date.now() + '-' + file.originalname;
-        const updateDeviceQuery = 'update devices set photo=$1 where id=$2';
-        await pool.query(updateDeviceQuery, [filename, req.params.id]);
+        console.log(filename, req.params.id)
+        req.filename = filename;
         cb(null, filename);
     }
 });

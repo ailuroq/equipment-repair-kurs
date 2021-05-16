@@ -7,7 +7,6 @@ const uploadFileMiddleware = require('../middlewares/upload');
 router.get('/', async (req, res, next) => {
     try {
         const result = await Device.getAllDevices();
-        console.log(result);
         res.send(result);
     }
     catch (err) {
@@ -46,8 +45,8 @@ router.get('/new', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     try {
-        const {name, countryId, photo, clientId, brandId, model} = req.body;
-        const result = await Device.insertDevice(name, countryId, photo, clientId, brandId, model);
+        const {nameId, countryId, clientId, brandId, model} = req.body;
+        const result = await Device.insertDevice(nameId, countryId, clientId, brandId, model);
         res.send(result);
     } catch (err) {
         next(err);
@@ -76,7 +75,8 @@ router.get('/edit-info/:id', async (req, res, next) => {
 
 router.post('/update-photo/:id', uploadFileMiddleware, async (req, res, next) => {
     try {
-        res.send(200);
+        const result = await Device.updateDevicePhoto(req.filename, req.params.id);
+        res.send(result);
     } catch (err) {
         next(err);
     }
@@ -85,7 +85,8 @@ router.post('/update-photo/:id', uploadFileMiddleware, async (req, res, next) =>
 router.post('/update/:id', async (req, res, next) => {
     try {
         const {id} = req.params;
-        const result = await Device.updateDeviceById(id);
+        const {name, country, client, brand, model} = req.body;
+        const result = await Device.updateDeviceById(id, name, country, client, brand, model);
         res.send(result);
     } catch (err) {
         next(err);

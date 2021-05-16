@@ -29,7 +29,7 @@ exports.getLimitedDevices = async (limit) => {
 };
 
 exports.getUpdateDeviceInfo = async (id) => {
-    const getDefaultDataQuery = 'select photo, model, device_names.id as name, brands.id as brand, country.id as country, clients.id as client, lastname, firstname, middlename, phone  from devices\n' +
+    const getDefaultDataQuery = 'select photo, model, device_names.id as nameId, device_names.name as name, brands.id as brandId, brands.name as brand, country.id as countryId, country.name as country, clients.id as clientId, lastname, firstname, middlename, phone  from devices\n' +
                                 'inner join clients on clients.id = devices.client_id\n' +
                                 'inner join device_names on device_names.id = devices.name_id\n' +
                                 'inner join country on country.id = devices.country_id\n' +
@@ -52,11 +52,11 @@ exports.getUpdateDeviceInfo = async (id) => {
     return {defaultData, names, countries, clients, brands};
 };
 
-exports.updateDeviceById = async (id, name, country, photo, client, brand, model) => {
+exports.updateDeviceById = async (id, name, country, client, brand, model) => {
     const updateDeviceQuery = 'UPDATE devices\n'
-        + 'SET name_id=$1, country_id=$2, photo=$3, client_id=$4, brand_id=$5, model=$6\n' +
-        'WHERE id=$7';
-    await pool.query(updateDeviceQuery, [name, country, photo, client, brand, model, id]);
+        + 'SET name_id=$1, country_id=$2, client_id=$3, brand_id=$4, model=$5\n' +
+        'WHERE id=$6';
+    await pool.query(updateDeviceQuery, [name, country, client, brand, model, id]);
 };
 
 exports.getPotentialDataToDelete = async (id) => {
@@ -67,9 +67,8 @@ exports.getPotentialDataToDelete = async (id) => {
                                      'where devices.id = $1' +
                                      'group by clients.id';
     let queryResult = await pool.query(getOrdersAndRepairsQuery, [id]);
-    const orders = queryResult.rows[0].orders;
-    const repairs = queryResult.rows[0].repairs;
-    return {orders, repairs};
+    const result = queryResult.rows[0];
+    return {result};
 };
 
 exports.deleteDevicesById = async (ids) => {
@@ -116,12 +115,16 @@ exports.getDeviceForView = async (id) => {
     return {device};
 };
 
-exports.insertDevice = async (name, countryId, photo, clientId, brandId, model) => {
-    const insertDeviceQuery = 'insert into devices(name, country_id, photo, client_id, brand_id, model)' +
-                              'values($1, $2, $3, $4, $5, $6)';
-    const queryResult = await pool.query(insertDeviceQuery, [name, countryId, photo, clientId, brandId, model]);
-    const device = queryResult.rows[0];
-    return {device};
+exports.insertDevice = async (name, countryId, clientId, brandId, model) => {
+    const insertDeviceQuery = 'insert into devices(name_id, country_id, client_id, brand_id, model)' +
+                              'values($1, $2, $3, $4, $5)';
+    await pool.query(insertDeviceQuery, [name, countryId, clientId, brandId, model]);
+    const getLastDeviceId = 'select id from devices\n' +
+        'order by id desc\n' +
+        'limit 1';
+    const lastDeviceIdQueryResult = await pool.query(getLastDeviceId);
+    const id = lastDeviceIdQueryResult.rows[0];
+    return {id};
 };
 
 exports.findDevices = async (data) => {
@@ -137,3 +140,7 @@ exports.findDevices = async (data) => {
     return {devices};
 };
 
+exports.updateDevicePhoto = async (filename, id) => {
+    const updateDeviceQuery = 'update devices set photo=$1 where id=$2';
+    await pool.query(updateDeviceQuery, [filename, id]);
+};
