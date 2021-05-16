@@ -49,13 +49,13 @@ exports.updateMaster = async (id, lastname, firstname, middlename, experience, f
     return {updateInfo};
 };
 
-exports.findMasters = async (lastname, experience) => {
+exports.findMasters = async (data) => {
     const getAllMastersQuery = 'select masters.id, lastname, firstname, middlename, experience, posts.name as post from masters\n'
         + 'left join posts on posts.id = post_id\n'
         + 'left join repair_firms on repair_firms.id = firm_id\n' +
-        'where lastname ilike $1 or experience=$2';
-    const queryResult = await pool.query(getAllMastersQuery, [lastname, experience]);
-    const masters = queryResult.rows[0];
+        'where lastname ilike $1 or experience=$1';
+    const queryResult = await pool.query(getAllMastersQuery, [data + '%']);
+    const masters = queryResult.rows;
     return {masters};
 };
 

@@ -47,6 +47,17 @@ router.post('/problems/:id', async (req, res, next) => {
     try {
         const {id} = req.params;
         const result = await DeviceName.getPotentialProblems(id);
+        console.log(result)
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/search', async (req, res, next) => {
+    try {
+        const data = req.query.data;
+        const result = await DeviceName.findDeviceNames(data);
         res.send(result);
     } catch (err) {
         next(err);

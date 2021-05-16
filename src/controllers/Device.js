@@ -124,15 +124,15 @@ exports.insertDevice = async (name, countryId, photo, clientId, brandId, model) 
     return {device};
 };
 
-exports.findDevices = async (brand, name) => {
+exports.findDevices = async (data) => {
     const findDevicesQuery = 'select devices.id, device_names.name as name, country.name as country, brands.name as brand, model, clients.lastname as lastname, clients.id as client from devices\n' +
                              'inner join device_names on devices.name_id = device_names.id\n' +
                              'inner join brands on devices.brand_id = brands.id\n' +
                              'inner join country on country.id = devices.country_id\n' +
                              'inner join clients on clients.id = devices.client_id\n' +
-                             'where device_names.name like $1\n' +
-                             'or brands.name like $2';
-    const queryResult = await pool.query(findDevicesQuery, [name + '%', brand + '%']);
+                             'where device_names.name ilike $1\n' +
+                             'or brands.name ilike $1';
+    const queryResult = await pool.query(findDevicesQuery, [data + '%']);
     const devices = queryResult.rows;
     return {devices};
 };

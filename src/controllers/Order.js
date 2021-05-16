@@ -5,20 +5,21 @@ exports.getAllOrders = async () => {
         'inner join masters on masters.id = orders.master_id\n' +
         'inner join devices on devices.id = orders.device_id\n' +
         'inner join device_names on device_names.id = devices.name_id\n' +
-        'order by id asc'
+        'order by id asc';
     const queryResult = await pool.query(getAllOrdersQuery);
     const orders = queryResult.rows;
-    return orders;
+    return { orders };
 };
 
 exports.getInsertOrderInfo = async () => {
-    const getFirmsQuery = 'select * from repair_firms';
-    const getDevicesQuery = 'select * from devices';
-    const queryFirmsResult = await pool.query(getFirmsQuery);
-    const firms = queryFirmsResult.rows;
+    const getMastersQuery = 'select * from masters';
+    const getDevicesQuery = 'select * from devices\n' +
+        'inner join device_names on name_id = device_names.id';
+    const queryFirmsResult = await pool.query(getMastersQuery);
+    const masters = queryFirmsResult.rows;
     const queryDevicesResult = await pool.query(getDevicesQuery);
     const devices = queryDevicesResult.rows;
-    return { firms, devices };
+    return { masters, devices };
 };
 
 exports.insertOrder = async (receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId) => {
@@ -80,19 +81,24 @@ exports.getOrderForView = async (id) => {
         'inner join devices on devices.id = orders.device_id\n' +
         'inner join device_names on device_names.id = devices.name_id\n' +
         'where orders.id = $1';
-    const queryResult = await pool.query(getOrderForView, [id]);
+    let queryResult = await pool.query(getOrderForView, [id]);
     const order = queryResult.rows[0];
-    return {order};
+    const getRepairsQuery = 'select * from repairs\n' +
+        'inner join orders on orders.id = repairs.order_id\n' +
+        'where orders.id = $1'
+    queryResult = await pool.query(getRepairsQuery, [$1]);
+    const repairs = queryResult.rows[0];
+    return {order, repairs};
 };
 
-exports.findOrders = async (number, master) => {
+exports.findOrders = async (data) => {
     const findQuery = 'select orders.id, receipt_number, order_date, completion_date, order_completed, device_names.name as device, repair_firms.name as firm from orders\n'
         + 'left join repair_firms on repair_firms.id = orders.firm_id\n'
         + 'left join devices on devices.id = orders.device_id\n'
         + 'left join device_names on device_names.id = devices.name_id\n' +
-        'where receipt_number=$1 or master_id=$2\n'
+        'where receipt_number=$1 or master_id=$1\n'
         + 'order by id asc';
-    const queryResult = await pool.query(findQuery, [number, master]);
+    const queryResult = await pool.query(findQuery, [data]);
     const orders = queryResult.rows;
     return {orders};
 };

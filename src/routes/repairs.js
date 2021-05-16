@@ -5,7 +5,6 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
     try {
         const result = await Repair.getAllRepairs();
-        console.log(result);
         res.send(result);
     }
     catch (err) {
@@ -23,20 +22,11 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.put('/:id', async (req, res, next) => {
-    try {
-        const {id, orderId, workId, completion, price} = req.body;
-        const result = await Repair.updateRepair(id, orderId, workId, completion, price);
-        res.send(result);
-    } catch (err) {
-        next(err);
-    }
-});
 
 router.get('/search', async (req, res, next) => {
     try {
-        const {completion, price} = req.query;
-        const result = await Repair.findRepairs(completion, price);
+        const {data} = req.query;
+        const result = await Repair.findRepairs(data);
         res.send(result);
     } catch (err) {
         next(err);
@@ -76,6 +66,16 @@ router.post('/update', async (req, res, next) => {
 router.get('/new', async(req, res, next) => {
     try {
         const result = await Repair.getInsertRepairInfo();
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/update/info/:id', async (req, res, next) => {
+    try {
+        const result = await Repair.getUpdateRepairInfo(req.params.id);
+        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);

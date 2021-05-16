@@ -3,7 +3,7 @@ const pool = require('../database/pool');
 exports.getAllDeviceNames = async () => {
     const getAllDeviceNames = 'select * from device_names order by id asc';
     const queryResult = await pool.query(getAllDeviceNames);
-    const deviceNames = queryResult.rows[0];
+    const deviceNames = queryResult.rows;
     return {deviceNames};
 };
 
@@ -19,10 +19,6 @@ exports.deleteDeviceNames = async (ids) => {
     for (const id of ids) {
         await pool.query(deleteDeviceNamesQuery, [id]);
     }
-    const getAllDeviceNames = 'select * from device_names order by id asc';
-    const queryResult = await pool.query(getAllDeviceNames);
-    const deviceNames = queryResult.rows[0];
-    return {deviceNames};
 };
 
 exports.getPotentialProblems = async (id) => {
@@ -30,27 +26,27 @@ exports.getPotentialProblems = async (id) => {
         'count(distinct devices.id) as devices,\n' +
         'count(distinct orders.id) as orders,\n' +
         'count(distinct repairs.id) as repairs\n' +
-        'from country\n' +
+        'from device_names\n' +
         'inner join devices on devices.name_id = device_names.id\n' +
         'inner join orders on orders.device_id = devices.id\n' +
         'inner join repairs on repairs.order_id = orders.id\n' +
-        'where country.id = $1';
+        'where device_names.id = $1';
     const queryResult = await pool.query(getPotentialProblemsQuery, [id]);
-    const problems = queryResult.rows;
+    const problems = queryResult.rows[0];
     return {problems};
 };
 
 exports.updateDeviceName = async (id, name) => {
     const updateDeviceNameQuery = 'update device_names\n' +
         'set name=$1 where id=$2';
-    const queryResult = await pool.query(updateDeviceNameQuery, [id, name]);
+    const queryResult = await pool.query(updateDeviceNameQuery, [name, id]);
     const updatedDeviceName = queryResult.rows[0];
     return {updatedDeviceName};
 };
 
-exports.findDeviceNames = async (id, name) => {
-    const findDeviceNamesQuery = 'select * from device_names where id=$1 or name ilike $2';
-    const queryResult = await pool.query(findDeviceNamesQuery, [id, name + '$']);
-    const deviceNames = queryResult.rows[0];
+exports.findDeviceNames = async (name) => {
+    const findDeviceNamesQuery = 'select * from device_names where name ilike $1';
+    const queryResult = await pool.query(findDeviceNamesQuery, [name + '%']);
+    const deviceNames = queryResult.rows;
     return {deviceNames};
 };

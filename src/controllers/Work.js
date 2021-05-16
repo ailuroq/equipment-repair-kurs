@@ -36,15 +36,15 @@ exports.getPotentialCountryDataToDelete = async (id) => {
 
 exports.updateWork = async (id, name) => {
     const updateWorkQuery = 'update work\n' +
-        'set =$1 where id=$2';
-    const queryResult = await pool.query(updateWorkQuery, [id, name]);
+        'set name=$1 where id=$2';
+    const queryResult = await pool.query(updateWorkQuery, [name, id]);
     const updatedWork = queryResult.rows[0];
     return {updatedWork};
 };
 
-exports.findWorks = async (id, name) => {
-    const findWorksQuery = 'select * from work where id=$1 or name ilike $2';
-    const queryResult = await pool.query(findWorksQuery, [id, name + '$']);
+exports.findWorks = async (name) => {
+    const findWorksQuery = 'select * from work where name ilike $2';
+    const queryResult = await pool.query(findWorksQuery, [name + '%']);
     const works = queryResult.rows[0];
     return {works};
 };

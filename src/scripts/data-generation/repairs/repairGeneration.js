@@ -21,7 +21,7 @@ exports.repairGeneration = async () => {
         for (let i = 1; i <= numberOfRepairs; i++) {
             if (i <= numberOfOrders) orderId = i;
             else orderId = Math.floor(Math.random() * numberOfOrders) + 1;
-            price = Math.floor(Math.random() * 5000 + 1)
+            price = Math.floor(Math.random() * 5000 + 1);
             workId = Math.floor(Math.random() * 4) + 1;
             completion = Math.random() < 0.8;
 

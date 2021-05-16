@@ -94,8 +94,7 @@ router.post('/update/:id', async (req, res, next) => {
 
 router.get('/search', async (req, res, next) => {
     try {
-        const {brand, name} = req.query;
-        const result = await Device.findDevices(brand, name);
+        const result = await Device.findDevices(req.query.deviceData);
         res.send(result);
     } catch (err) {
         next(err);

@@ -6,6 +6,15 @@ const FirstQuery = require('../controllers/FirstQuery');
 const SecondQuery = require('../controllers/SecondQuery');
 const ThirdQuery = require('../controllers/ThirdQuery');
 
+router.get('/first/info', async (req, res, next) => {
+    try {
+        const result = await FirstQuery.getQueryInfo();
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 router.get('/first', async (req, res, next) => {
     try {
         const firmId = req.query.firmId;

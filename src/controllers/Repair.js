@@ -1,7 +1,7 @@
 const pool = require('../database/pool');
 
 exports.getAllRepairs = async () => {
-    const getAllRepairsQuery = 'select repairs.id, receipt_number, work.type, work.price, completion from repairs\n' +
+    const getAllRepairsQuery = 'select repairs.id, receipt_number, work.type, price, completion from repairs\n' +
                                'left join orders on orders.id = order_id\n' +
                                'left join work on work.id = work_id';
     const queryResult = await pool.query(getAllRepairsQuery);
@@ -30,17 +30,18 @@ exports.updateRepair = async (id, orderId, workId, completion, price) => {
     await pool.query(updateRepairQuery, [orderId, workId, completion, price, id]);
 };
 
-exports.getUpdateRepairInfo = async () => {
-    const getCurrentInfoQuery = 'select orders.receipt_number, work.type, repairs.id, repairs.completion, repairs.price from repairs\n' +
+exports.getUpdateRepairInfo = async (id) => {
+    const getCurrentInfoQuery = 'select orders.receipt_number, work.type, orders.id as order, work.id as work, repairs.id, repairs.completion, repairs.price from repairs\n' +
         'inner join orders on orders.id = repairs.order_id\n' +
-        'inner join work on work.id = repairs.work_id';
-    const queryCurrentInfoResult = await pool.query(getCurrentInfoQuery);
-    const current = queryCurrentInfoResult.rows;
+        'inner join work on work.id = repairs.work_id\n' +
+        'where repairs.id = $1';
+    const queryCurrentInfoResult = await pool.query(getCurrentInfoQuery, [id]);
+    const current = queryCurrentInfoResult.rows[0];
     const getOrdersQuery = 'select * from orders';
     const queryOrdersResult = await pool.query(getOrdersQuery);
     const orders = queryOrdersResult.rows;
     const getWorksQuery = 'select * from work';
-    const queryWorksResult = getWorksQuery.rows;
+    const queryWorksResult = await pool.query(getWorksQuery);
     const works = queryWorksResult.rows;
     return {current, orders, works};
 };
@@ -53,8 +54,9 @@ exports.getRepairForView = async (id) => {
     const repairs = queryResult.rows;
     return {repairs};
 };
+/*
 
-exports.getInsertRepairInfo = async (id) => {
+exports.getInsertRepairInfo = async () => {
     const getCurrentInfoQuery = 'select orders.receipt_number, work.type, repairs.id, repairs.completion, repairs.price from repairs\n' +
         'inner join orders on orders.id = repairs.order_id\n' +
         'inner join work on work.id = repairs.work_id';
@@ -62,13 +64,24 @@ exports.getInsertRepairInfo = async (id) => {
     const current = queryCurrentInfoResult.rows;
     return {current};
 };
+*/
 
-exports.findRepairs = async (completion, price) => {
+exports.getInsertRepairInfo = async () => {
+    const getWorksQuery = 'select * from work';
+    const getWorksQueryResult = await pool.query(getWorksQuery);
+    const works = getWorksQueryResult.rows;
+    const getOrdersQuery = 'select * from orders';
+    const getOrdersQueryResult = await pool.query(getOrdersQuery);
+    const orders = getOrdersQueryResult.rows;
+    return {works, orders};
+};
+
+exports.findRepairs = async (data) => {
     const findRepairsQuery = 'select orders.receipt_number, work.type, repairs.id, repairs.completion, repairs.price from repairs\n' +
         'inner join orders on orders.id = repairs.order_id\n' +
         'inner join work on work.id = repairs.work_id\n' +
-        'where completion=$1 or price=$2';
-    const queryResult = await pool.query(findRepairsQuery, [completion, price]);
+        'where type ilike $1';
+    const queryResult = await pool.query(findRepairsQuery, [data + '%']);
     const repairs = queryResult.rows;
     return {repairs};
 };

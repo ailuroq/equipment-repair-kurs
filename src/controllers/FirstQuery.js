@@ -1,7 +1,15 @@
 const pool = require('../database/pool');
 
+exports.getQueryInfo = async () => {
+    const getFirmsQuery = 'select * from repair_firms';
+    const queryResult = await pool.query(getFirmsQuery);
+    const firms = queryResult.rows;
+    return {firms};
+};
+
+
 exports.getTableByQuery = async (firmId) => {
-    const queryFirstPart = 'select brands.name, repair_firms.name, repair_firms.id, count(*) from brands\n' +
+    const queryFirstPart = 'select brands.name as brand, repair_firms.name, repair_firms.id, count(*) from brands\n' +
                 'left join devices on brand_id = brands.id\n' +
                 'left join orders on orders.device_id = devices.id\n' +
                 'left join masters on masters.id = orders.master_id\n' +

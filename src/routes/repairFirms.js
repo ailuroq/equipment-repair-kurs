@@ -48,7 +48,6 @@ router.get('/search', async (req, res, next) => {
 router.get('/info/:id', async (req, res, next) => {
     try {
         const result = await repairFirm.getFirmForView(req.params.id);
-        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);

@@ -77,7 +77,7 @@ exports.getClientForView = async (id) => {
 };
 
 exports.findClients = async (clientData) => {
-    const getClientsByData = 'select * from clients where lastname like $1 or firstname like $1';
+    const getClientsByData = 'select * from clients where lastname ilike $1 or firstname ilike $1';
     const queryResult = await pool.query(getClientsByData, [clientData + '%']);
     const clients = queryResult.rows;
     return { clients };

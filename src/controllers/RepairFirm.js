@@ -53,19 +53,11 @@ exports.updateFirmById = async (id, name, address, phone, cityId) => {
 };
 
 exports.findFirms = async (data) => {
-    if (!data) {
-        const getAllFirmsQuery = 'select repair_firms.id, repair_firms.name, address, phone, cities.name as city from repair_firms\n'
-            + 'left join cities on cities.id = repair_firms.city_id\n'
-            + 'order by id asc';
-        const queryResult = await pool.query(getAllFirmsQuery);
-        const firms = queryResult.rows;
-        return {firms};
-    }
     const getFirmsByData = 'select repair_firms.id, repair_firms.name, address, phone, cities.name as city from repair_firms\n' +
                            'inner join cities on cities.id = repair_firms.city_id\n' +
                            'where repair_firms.name ilike $1 or\n' +
                            'address ilike $1';
-    const queryResult = await pool.query(getFirmsByData, [data]);
+    const queryResult = await pool.query(getFirmsByData, [data + '%']);
     const firms = queryResult.rows;
     return {firms};
 };
