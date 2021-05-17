@@ -28,7 +28,10 @@ exports.insertMaster = async (lastname, firstname, middlename, experience, post_
 };
 
 exports.getUpdateMasterInfo = async (id) => {
-    const getCurrentMasterDataQuery = 'select * from masters where id=$1';
+    const getCurrentMasterDataQuery = 'select lastname, firstname, middlename, experience, firm_id as firmid, repair_firms.name as firm, post_id as postid, posts.name as post from masters\n' +
+        'inner join posts on posts.id = masters.post_id\n' +
+        'inner join repair_firms on repair_firms.id = masters.firm_id\n' +
+        'where masters.id=$1';
     const currentDataQueryResult = await pool.query(getCurrentMasterDataQuery, [id]);
     const current = currentDataQueryResult.rows[0];
     const getFirmQuery = 'select * from repair_firms';
@@ -37,12 +40,13 @@ exports.getUpdateMasterInfo = async (id) => {
     const firms = queryFirmResult.rows;
     const queryPostsResult = await pool.query(getPostsQuery);
     const posts = queryPostsResult.rows;
+    console.log(current)
     return {current, firms, posts};
 };
 
 exports.updateMaster = async (id, lastname, firstname, middlename, experience, firmId, postId) => {
     const updateMasterQuery = 'update masters\n' +
-        'set lastname=$1, firstname=$2, middlename=$3, experience=$4, firmId=$5, postId=$6\n' +
+        'set lastname=$1, firstname=$2, middlename=$3, experience=$4, firm_id=$5, post_id=$6\n' +
         'where masters.id =$7';
     const queryResult = await pool.query(updateMasterQuery, [lastname, firstname, middlename, experience, firmId, postId, id]);
     const updateInfo = queryResult.rows[0];

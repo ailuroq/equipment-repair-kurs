@@ -67,10 +67,9 @@ router.get('/info/:id', async (req, res, next) => {
     }
 });
 
-router.post('/delete/:ids', async (req, res, next) => {
+router.post('/delete', async (req, res, next) => {
     try {
-        const ids = req.params.ids;
-        const result = await Client.deleteClientById(ids);
+        const result = await Client.deleteClientById(req.body.ids);
         res.send(result);
     }
     catch (err) {

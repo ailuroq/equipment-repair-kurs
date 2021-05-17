@@ -13,10 +13,6 @@ exports.deleteClientById = async (ids) => {
     for (const id of ids) {
         await pool.query(deleteClientQuery, [id]);
     }
-    const getAllClientsQuery = 'select * from clients order by id asc';
-    const queryResult = await pool.query(getAllClientsQuery);
-    const clients = queryResult.rows;
-    return { clients };
 };
 
 exports.getPotentialProblems = async (id) => {

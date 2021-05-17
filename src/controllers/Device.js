@@ -72,19 +72,10 @@ exports.getPotentialDataToDelete = async (id) => {
 };
 
 exports.deleteDevicesById = async (ids) => {
-    const deleteDevicesQuery = 'delete from devices where id = $1';
+    const deleteDevicesQuery = 'delete from devices where id=$1';
     for (const id of ids) {
-        await pool.query(deleteDevicesQuery, [id]);
+        await pool.query(deleteDevicesQuery, [parseInt(id)]);
     }
-    const getAllDevicesQuery = 'select devices.id as id, clients.id as client, country.name as country, brands.name as brand, device_names.name as name, model from devices\n'
-                             + 'left join country on country.id = devices.country_id\n'
-                             + 'left join clients on clients.id = devices.client_id\n'
-                             + 'left join brands on brands.id = devices.brand_id\n'
-                             + 'left join device_names on device_names.id = devices.name_id\n'
-                             + 'order by devices.id asc';
-    const queryResult = await pool.query(getAllDevicesQuery);
-    const devices = queryResult.rows;
-    return {devices};
 };
 
 exports.getInsertDeviceInfo = async () => {

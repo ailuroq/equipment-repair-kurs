@@ -102,4 +102,13 @@ router.get('/search', async (req, res, next) => {
     }
 });
 
+router.get('/problems/:id', async (req, res, next) => {
+    try {
+        const result = await Device.getPotentialDataToDelete(req.params.id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
