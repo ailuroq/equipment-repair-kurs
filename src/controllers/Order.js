@@ -85,10 +85,22 @@ exports.getOrderForView = async (id) => {
     const order = queryResult.rows[0];
     const getRepairsQuery = 'select * from repairs\n' +
         'inner join orders on orders.id = repairs.order_id\n' +
-        'where orders.id = $1'
-    queryResult = await pool.query(getRepairsQuery, [$1]);
+        'where orders.id = $1';
+    queryResult = await pool.query(getRepairsQuery, [id]);
     const repairs = queryResult.rows[0];
-    return {order, repairs};
+    const getDevice = 'select * from orders\n' +
+        'inner join devices on orders.device_id = devices.id\n' +
+        'where orders.id = $1';
+    queryResult = await pool.query(getDevice, [id]);
+    const device = queryResult.rows[0];
+    const priceForOrderQuery = 'select sum(repairs.price) from orders\n' +
+        'inner join masters on orders.master_id = masters.id\n' +
+        'inner join repair_firms on masters.firm_id = repair_firms.id\n' +
+        'inner join repairs  on repairs.order_id = orders.id\n' +
+        'where orders.id = $1';
+    queryResult = await pool.query(priceForOrderQuery, [id]);
+    const price = queryResult.rows[0];
+    return {device, order, repairs, price};
 };
 
 exports.findOrders = async (data) => {
