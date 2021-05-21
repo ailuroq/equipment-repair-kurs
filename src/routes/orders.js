@@ -77,4 +77,13 @@ router.get('/new', async (req, res, next) => {
     }
 });
 
+router.get('/update/info/:id', async (req, res, next) => {
+    try {
+        const result = await Order.getUpdateOrderInfo(req.params.id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

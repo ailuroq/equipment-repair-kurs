@@ -29,16 +29,22 @@ exports.insertOrder = async (receiptNumber, orderDate, completionDate, orderComp
 };
 
 exports.getUpdateOrderInfo = async (id) => {
-    const getCurrentDataQuery = 'select * from orders where id=$1';
+    const getCurrentDataQuery = 'select orders.receipt_number, orders.order_date, orders.completion_date, orders.order_completed, orders.device_id, device_names.name as device, masters.lastname as master, masters.id as master_id from orders\n' +
+        'inner join masters on masters.id = orders.master_id\n' +
+        'inner join devices on devices.id = orders.device_id\n' +
+        'inner join device_names on device_names.id = devices.name_id\n' +
+        'where orders.id = $1';
     const currentDataQueryResult = await pool.query(getCurrentDataQuery, [id]);
     const current = currentDataQueryResult.rows[0];
-    const getFirmsQuery = 'select * from repair_firms';
-    const getDevicesQuery = 'select * from devices';
-    const queryFirmsResult = await pool.query(getFirmsQuery);
-    const firms = queryFirmsResult.rows;
+    const getFirmsQuery = 'select * from masters';
+    const getDevicesQuery = 'select devices.id as id, device_names.name as name from devices\n' +
+        'inner join device_names on device_names.id = devices.name_id\n' +
+        'order by devices.id';
+    const queryMastersResult = await pool.query(getFirmsQuery);
+    const masters = queryMastersResult.rows;
     const queryDevicesResult = await pool.query(getDevicesQuery);
     const devices = queryDevicesResult.rows;
-    return {current, firms, devices};
+    return {current, masters, devices};
 };
 
 exports.updateOrderById = async (id, receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId) => {
@@ -83,11 +89,12 @@ exports.getOrderForView = async (id) => {
         'where orders.id = $1';
     let queryResult = await pool.query(getOrderForView, [id]);
     const order = queryResult.rows[0];
-    const getRepairsQuery = 'select * from repairs\n' +
+    const getRepairsQuery = 'select repairs.completion, repairs.price, work.type from repairs\n' +
         'inner join orders on orders.id = repairs.order_id\n' +
+        'inner join work on work.id = repairs.work_id\n' +
         'where orders.id = $1';
     queryResult = await pool.query(getRepairsQuery, [id]);
-    const repairs = queryResult.rows[0];
+    const repairs = queryResult.rows;
     const getDevice = 'select * from orders\n' +
         'inner join devices on orders.device_id = devices.id\n' +
         'where orders.id = $1';
