@@ -75,23 +75,23 @@ exports.groupDevicesByCountries = async () => {
     return {devices};
 };
 //Запрос на запросе по принципу левого соединения
-exports.noOrderPerPeriod = async () => {
+exports.noOrderPerPeriod = async (from, to) => {
     const query = 'select * from (\n' +
         '\tselect count(orders.id) as cnt, count(masters.id) as masters, repair_firms.name, repair_firms.id from repair_firms\n' +
         '\tleft join masters on masters.firm_id = repair_firms.id\n' +
         '\tleft join orders on orders.master_id = masters.id\n' +
         '\tgroup by repair_firms.name, repair_firms.id, orders.order_date\n' +
-        '\thaving orders.order_date >= \'20201010\'\n' +
-        '\tand orders.order_date < \'20201111\'\n' +
+        '\thaving orders.order_date >= $1\n' +
+        '\tand orders.order_date < $2\n' +
         ') result';
-    const queryResult = await pool.query(query);
+    const queryResult = await pool.query(query, [from, to]);
     const firms = queryResult.rows;
     return {firms};
 };
 
 
 //Итоговый запрос без условия
-exports.countOrderPerFirm = async () => {
+exports.countOrdersPerFirm = async () => {
     const countQuery = 'select count(orders.id) as orders from repair_firms\n' +
         'inner join masters on masters.firm_id = repair_firms.id\n' +
         'inner join orders on orders.master_id = masters.id\n' +

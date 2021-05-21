@@ -13,8 +13,9 @@ exports.getAllOrders = async () => {
 
 exports.getInsertOrderInfo = async () => {
     const getMastersQuery = 'select * from masters';
-    const getDevicesQuery = 'select * from devices\n' +
-        'inner join device_names on name_id = device_names.id';
+    const getDevicesQuery = 'select devices.id as id, device_names.name as name from devices\n' +
+        'inner join device_names on name_id = device_names.id\n' +
+        'order by devices.id asc';
     const queryFirmsResult = await pool.query(getMastersQuery);
     const masters = queryFirmsResult.rows;
     const queryDevicesResult = await pool.query(getDevicesQuery);
