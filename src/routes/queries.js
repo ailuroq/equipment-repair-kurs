@@ -137,6 +137,7 @@ router.get('/count_orders_per_period', async (req, res, next) => {
     try {
         const {id, from, to} = req.query;
         const result = await Query.countOrdersPerPeriod(from, to, id);
+        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);

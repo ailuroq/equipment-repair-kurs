@@ -88,13 +88,15 @@ exports.groupDevicesByCountries = async () => {
 //Запрос на запросе по принципу левого соединения
 exports.noOrderPerPeriod = async (from, to) => {
     const query = 'select * from (\n' +
-        '\tselect count(orders.id) as cnt, count(masters.id) as masters, repair_firms.name, repair_firms.id from repair_firms\n' +
+        '\tselect count(orders.id), repair_firms.id, repair_firms.name, repair_firms.phone,orders.order_date, orders.completion_date from repair_firms\n' +
         '\tleft join masters on masters.firm_id = repair_firms.id\n' +
         '\tleft join orders on orders.master_id = masters.id\n' +
-        '\tgroup by repair_firms.name, repair_firms.id, orders.order_date\n' +
-        '\thaving orders.order_date >= $1\n' +
-        '\tand orders.order_date < $2\n' +
-        ') result';
+        '\tgroup by repair_firms.id, repair_firms.name, repair_firms.phone, orders.order_date, orders.completion_date\n' +
+        '\torder by repair_firms.id\n' +
+        ') result\n' +
+        'where result.count = 0 \n' +
+        'and (result.order_date >= $1 or result.completion_date < $2) or\n' +
+        '(result.order_date is null and result.completion_date is null)';
     const queryResult = await pool.query(query, [from, to]);
     const firms = queryResult.rows;
     return {firms};
@@ -132,10 +134,10 @@ exports.countOrdersPerPeriod = async (from, to, id) => {
         'inner join orders on orders.master_id = masters.id\n' +
         'inner join cities on cities.id = repair_firms.city_id\n' +
         'where orders.order_date >= $1\n' +
-        'and orders.order_date < $2]\n' +
-        'and where repair_firms.id = $3';
+        'and orders.order_date < $2\n' +
+        'and repair_firms.id = $3';
     const queryResult = await pool.query(countQuery, [from, to, id]);
-    const orders = queryResult.rows;
+    const orders = queryResult.rows[0];
     return {orders};
 };
 
@@ -165,5 +167,5 @@ exports.mastersExpMoreAvg = async () => {
         'where result.avgexp > (select round(avg(experience)) as avgExp from masters)';
     const queryResult = await pool.query(query);
     const firms = queryResult.rows;
-    return {firms};
+    return firms;
 };
