@@ -20,9 +20,17 @@ exports.createFirm = async (name, address, phone, cityId) => {
 exports.getFirmForView = async (id) => {
     const getFirmForView = 'select *, cities.name as city from repair_firms\n' +
         'inner join cities on cities.id = repair_firms.city_id where repair_firms.id = $1';
-    const queryResult = await pool.query(getFirmForView, [id]);
-    const firm = queryResult.rows;
-    return firm;
+    let queryResult = await pool.query(getFirmForView, [id]);
+    const firm = queryResult.rows[0];
+    const countQuery = 'select count(orders.id), repair_firms.name, repair_firms.id from repair_firms\n' +
+        'inner join masters on masters.firm_id = repair_firms.id\n' +
+        'inner join orders on orders.master_id = masters.id\n' +
+        'where repair_firms.id = $1\n' +
+        'group by repair_firms.id\n' +
+        'order by repair_firms.id';
+    queryResult = await pool.query(countQuery, [id]);
+    const count = queryResult.rows[0];
+    return {firm, count};
 };
 
 exports.getInsertFirmInfo = async () => {

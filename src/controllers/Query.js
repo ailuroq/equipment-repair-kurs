@@ -2,36 +2,50 @@ const pool = require('../database/pool');
 
 //Выбор всех выполненных заказов мастера за определенный период
 exports.ordersDoneByMaster = async (mastersId, from, to) => {
-    const query = 'select * from orders\n' +
+    const query = 'select orders.id, receipt_number, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date, device_names.name from orders\n' +
         'inner join masters on masters.id = orders.master_id\n' +
         'inner join devices on devices.id = orders.device_id\n' +
+        'inner join device_names on device_names.id = devices.name_id\n' +
         'where orders.order_date >= $1\n' +
         'and orders.order_date < $2\n' +
         'and masters.id = $3\n' +
         'and orders.completion_date is not null';
     const queryResult = await pool.query(query, [from, to, mastersId]);
     const orders = queryResult.rows;
-    return {orders};
+    return orders;
 };
 exports.ordersNotDoneByMaster = async (mastersId, from, to) => {
-    const query = 'select * from orders\n' +
+    const query = 'select orders.id, receipt_number, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date, device_names.name from orders\n' +
         'inner join masters on masters.id = orders.master_id\n' +
         'inner join devices on devices.id = orders.device_id\n' +
+        'inner join device_names on device_names.id = devices.name_id\n' +
         'where orders.order_date >= $1\n' +
         'and orders.order_date < $2\n' +
         'and masters.id = $3\n' +
         'and orders.completion_date is null';
     const queryResult = await pool.query(query, [from, to, mastersId]);
     const orders = queryResult.rows;
-    return {orders};
+    return orders;
 };
 
+//Подсчет всех невыполненных заказов
+exports.notMadeOrders = async () => {
+    const query = 'select orders.id, receipt_number, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date, device_names.name from orders\n' +
+        'inner join devices on devices.id = orders.device_id\n' +
+        'inner join device_names on device_names.id = devices.name_id\n' +
+        'where completion_date is null\n' +
+        'order by devices.id asc';
+    const queryResult = await pool.query(query);
+    const orders = queryResult.rows;
+    return {orders};
+};
 //Группировка работ по типу
 exports.groupRepairByType = async () => {
-    const query = 'select repairs.id, repairs.completion, work.type from repairs\n' +
-        'inner join work on work.id = repairs.work_id\n' +
-        'inner join orders on orders.id = repairs.order_id\n' +
-        'group by work.type, repairs.id';
+    const query = 'select repairs.id, repairs.completion, work.type, repairs.price from repairs\n' +
+        'right join work on work.id = repairs.work_id\n' +
+        'right join orders on orders.id = repairs.order_id\n' +
+        'group by work.type, repairs.id\n' +
+        'order by repairs.id asc';
     const queryResult = await pool.query(query);
     const repairs = queryResult.rows;
     return {repairs};
@@ -47,7 +61,11 @@ exports.countMastersPerFirm = async () => {
 };
 //Выбрать производителя и всю его технику
 exports.findDevicesByBrand = async (id) => {
-    const query = 'select * from devices\n' +
+    const query = 'select devices.id, device_names.name as name, devices.photo, country.name as country, brands.name as brand, devices.model, clients.lastname as client from devices\n' +
+        'inner join clients on clients.id = devices.client_id\n' +
+        'inner join country on country.id = devices.country_id\n' +
+        'inner join brands on brands.id = devices.brand_id\n' +
+        'inner join device_names on device_names.id = devices.name_id\n' +
         'where devices.brand_id = $1\n' +
         'order by devices.id';
     const queryResult = await pool.query(query, [id]);
@@ -55,21 +73,14 @@ exports.findDevicesByBrand = async (id) => {
     return {devices};
 };
 
-//Подсчет всех невыполненных заказов
-exports.notMadeOrders = async () => {
-    const query = 'select * from orders\n' +
-        'where completion_date is null';
-    const queryResult = await pool.query(query);
-    const orders = queryResult.rows;
-    return orders;
-};
+
 //Группировка техники по странам
 exports.groupDevicesByCountries = async () => {
-    const query = 'select device_names.name, devices.photo, country.name from devices\n' +
+    const query = 'select devices.id, device_names.name, devices.photo, devices.model, country.name as country, brands.name as brand from devices\n' +
         'inner join brands on brands.id = devices.brand_id\n' +
         'inner join device_names on device_names.id = devices.name_id\n' +
         'inner join country on country.id = devices.country_id\n' +
-        'group by country.name, device_names.name, devices. photo';
+        'group by devices.id, country.name, device_names.name, devices.photo, brands.name';
     const queryResult = await pool.query(query);
     const devices = queryResult.rows;
     return {devices};
@@ -92,16 +103,16 @@ exports.noOrderPerPeriod = async (from, to) => {
 
 //Итоговый запрос без условия
 exports.countOrdersPerFirm = async () => {
-    const countQuery = 'select count(orders.id) as orders from repair_firms\n' +
+    const countQuery = 'select count(orders.id), repair_firms.name, repair_firms.id from repair_firms\n' +
         'inner join masters on masters.firm_id = repair_firms.id\n' +
         'inner join orders on orders.master_id = masters.id\n' +
         'group by repair_firms.id\n' +
         'order by repair_firms.id';
     const queryResult = await pool.query(countQuery);
-    const count = queryResult.rows;
-    return {count};
+    const firms = queryResult.rows;
+    return {firms};
 };
-//Итоговый запрос с условием на группы
+
 exports.groupOrdersByCities = async () => {
     const groupQuery = 'select count(orders.id) as orders, cities.name as orders from repair_firms\n' +
         'inner join masters on masters.firm_id = repair_firms.id\n' +
@@ -130,7 +141,7 @@ exports.countOrdersPerPeriod = async (from, to, id) => {
 
 //Самый дорогой заказ
 exports.theMostExpensiveOrder = async () => {
-    const query = 'select sum(repairs.price), orders.id, orders.order_date, orders.completion_date from orders\n' +
+    const query = 'select sum(repairs.price), orders.id, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date from orders\n' +
         'inner join masters on orders.master_id = masters.id\n' +
         'inner join repair_firms on masters.firm_id = repair_firms.id\n' +
         'inner join repairs  on repairs.order_id = orders.id\n' +
@@ -139,7 +150,7 @@ exports.theMostExpensiveOrder = async () => {
         'order by sum desc\n' +
         'limit 1';
     const queryResult = await pool.query(query);
-    const order = queryResult.rows;
+    const order = queryResult.rows[0];
     return {order};
 };
 

@@ -49,18 +49,12 @@ router.get('/third', async (req, res, next) => {
 router.get('/orders_by_master_per_period', async (req, res, next) => {
     try {
         const {masterId, from, to} = req.query;
-        const result = await Query.ordersDoneByMaster(masterId, from, to);
-        res.send(result);
-    } catch (err) {
-        next(err);
-    }
-});
-
-router.get('/done_orders_by_master', async (req, res, next) => {
-    try {
-        const {masterId, from, to} = req.query;
-        const result = await Query.ordersNotDoneByMaster(masterId, from, to);
-        res.send(result);
+        const resultDone = await Query.ordersDoneByMaster(masterId, from, to);
+        const resultNotDone = await Query.ordersNotDoneByMaster(masterId, from, to);
+        res.send({
+            resultDone,
+            resultNotDone
+        });
     } catch (err) {
         next(err);
     }
@@ -93,7 +87,7 @@ router.get('/find_devices_by_brand', async (req, res, next) => {
     }
 });
 
-router.get('/count_not_made_orders', async (req, res, next) => {
+router.get('/list_not_made_orders', async (req, res, next) => {
     try {
         const result = await Query.notMadeOrders();
         res.send(result);
@@ -112,9 +106,18 @@ router.get('/no_orders_per_period', async (req, res, next) => {
     }
 });
 
-router.get('count_orders_per_firm', async (req, res, next) => {
+router.get('/count_orders_per_firm', async (req, res, next) => {
     try {
         const result = await Query.countOrdersPerFirm();
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/group_devices_by_countries', async (req, res, next) => {
+    try {
+        const result = await Query.groupDevicesByCountries();
         res.send(result);
     } catch (err) {
         next(err);
