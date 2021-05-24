@@ -51,11 +51,11 @@ exports.getUpdateOrderInfo = async (id) => {
     return {current, masters, devices};
 };
 
-exports.updateOrderById = async (id, receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId) => {
-    const updateOrderQuery = 'update orders' +
-        'set receipt_number=$1, order_date=$2, completion_date=$3, order_completed=$4, device_id=$5, master_id=$6' +
-        'where orders.id = $7';
-    await pool.query(updateOrderQuery, [receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId]);
+exports.updateOrderById = async (id, orderDate, completionDate, orderCompleted, deviceId, masterId) => {
+    const updateOrderQuery = 'update orders\n' +
+        'set order_date=$1, completion_date=$2, order_completed=$3, device_id=$4, master_id=$5\n' +
+        'where orders.id = $6';
+    await pool.query(updateOrderQuery, [orderDate, completionDate, orderCompleted, deviceId, masterId, id]);
 };
 
 exports.getPotentialOrderDataToDelete = async (id) => {

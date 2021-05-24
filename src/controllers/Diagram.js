@@ -15,7 +15,15 @@ exports.get1DDiagram = async () => {
             datasets: [
                 {
                     label: 'Должности',
-                    backgroundColor: 'rgba(75,192,192,1)',
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(0,255,11)',
+                        'rgb(0,255,217)',
+                        'rgb(255,0,0)',
+                        'rgb(201,255,0)'
+                    ],
                     borderColor: 'rgba(0,0,0,1)',
                     borderWidth: 2,
                     data
@@ -38,8 +46,10 @@ exports.get2DDiagram = async () => {
         labels,
         datasets: [
             {
-                label: 'Средний возраст',
-                backgroundColor: 'rgba(75,192,192,1)',
+                label: 'Средний опыт работы',
+                backgroundColor: [
+                    'rgb(255, 205, 86)',
+                ],
                 borderColor: 'rgba(0,0,0,1)',
                 borderWidth: 2,
                 data

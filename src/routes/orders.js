@@ -50,9 +50,9 @@ router.post('/update/:id', async (req, res, next) => {
     try {
         const id = req.params.id;
         const {
-            receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId
+            orderDate, completionDate, orderCompleted, deviceId, masterId
         } = req.body;
-        const result = await Order.updateOrderById(id, receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId);
+        const result = await Order.updateOrderById(id, orderDate, completionDate, orderCompleted, deviceId, masterId);
         res.send(result);
     } catch (err) {
         next(err);

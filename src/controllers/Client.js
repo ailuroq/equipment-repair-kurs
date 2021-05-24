@@ -35,6 +35,7 @@ exports.getAllClients = async () => {
     const getAllClientsQuery = 'SELECT * FROM clients ORDER BY id ASC';
     const queryResult = await pool.query(getAllClientsQuery);
     const clients = queryResult.rows;
+    console.log(clients)
     return { clients };
 };
 

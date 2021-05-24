@@ -24,5 +24,8 @@ router.use('/complex-queries', require('./queries'));
 //diagrams
 router.use('/diagrams', require('./diagrams'));
 
+//login
+router.use('/login', require('./logins'));
+
 
 module.exports = router;
