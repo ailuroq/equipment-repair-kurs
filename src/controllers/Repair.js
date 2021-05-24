@@ -1,4 +1,5 @@
 const pool = require('../database/pool');
+const moment = require('moment');
 
 exports.getAllRepairs = async () => {
     const getAllRepairsQuery = 'select repairs.id, receipt_number, work.type, price, completion from repairs\n' +
@@ -13,6 +14,7 @@ exports.getAllRepairs = async () => {
 exports.deleteRepairs = async (ids) => {
     const deleteRepairsQuery = 'delete from repairs where id=$1';
     for (const id of ids) {
+        await checkOrdersCompletion(id);
         await pool.query(deleteRepairsQuery, [id]);
     }
 };
@@ -22,6 +24,7 @@ exports.updateRepair = async (id, orderId, workId, completion, price) => {
         'set order_id=$1, work_id=$2, completion=$3, price=$4\n' +
         'where id=$5';
     await pool.query(updateRepairQuery, [orderId, workId, completion, price, id]);
+    await checkOrdersCompletion(id);
 };
 
 exports.getUpdateRepairInfo = async (id) => {
@@ -82,9 +85,33 @@ exports.findRepairs = async (data) => {
 
 exports.insertRepair = async (orderId, workId, completion, price) => {
     const insertRepair = 'insert into repairs(order_id, work_id, completion, price)\n' +
-        'values($1,$2,$3,$4)';
+        'values($1,$2,$3,$4) returning id';
     const queryResult = await pool.query(insertRepair, [orderId, workId, completion, price]);
-    const repairs = queryResult.rows;
+    const repairs = queryResult.rows[0];
+    console.log(repairs.id)
+    await checkOrdersCompletion(repairs.id);
     return {repairs};
 };
 
+const checkOrdersCompletion = async (id) => {
+    const checkQuery = 'select completion, order_id from repairs\n' +
+        'inner join orders on orders.id = repairs.order_id\n' +
+        'where orders.id = (\n' +
+        '\tselect orders.id as orders from repairs\n' +
+        '\tinner join orders on orders.id = repairs.order_id\n' +
+        '\twhere repairs.id = $1\n' +
+        ')';
+    const queryResult = await pool.query(checkQuery, [id]);
+    let flag = true;
+    const orderId = queryResult.rows[0].order_id;
+    const dateNow = moment(new Date()).format('DD-MM-YYYY');
+    const setOrderCompletedQuery = `update orders set order_completed=true, completion_date='${dateNow}' where orders.id = $1`;
+    const setOrderNotCompletedQuery = 'update orders set order_completed=false, completion_date=null where orders.id = $1';
+    for (const repair of queryResult.rows) {
+        if (repair.completion === false) {
+            flag = false;
+        }
+    }
+    if (flag) await pool.query(setOrderCompletedQuery, [orderId]);
+    if (!flag) await pool.query(setOrderNotCompletedQuery, [orderId]);
+};

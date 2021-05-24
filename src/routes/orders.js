@@ -26,19 +26,20 @@ router.get('/problems/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const {
-            receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId
+            orderDate, completionDate, orderCompleted, deviceId, masterId
         } = req.body;
-        const result = await Order.insertOrder(receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId);
+        const result = await Order.insertOrder(orderDate, completionDate, orderCompleted, deviceId, masterId);
         res.send(result);
     } catch (err) {
         next(err);
     }
 });
 
-router.post('/search', async (req, res, next) => {
+router.get('/search', async (req, res, next) => {
     try {
-        const {findData} = req.query;
-        const result = await Order.findOrders(findData);
+        const {data} = req.query;
+        console.log(data)
+        const result = await Order.findOrders(data);
         res.send(result);
     } catch (err) {
         next(err);
@@ -80,6 +81,16 @@ router.get('/new', async (req, res, next) => {
 router.get('/update/info/:id', async (req, res, next) => {
     try {
         const result = await Order.getUpdateOrderInfo(req.params.id);
+        res.send(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/delete', async (req, res, next) => {
+    try {
+        const ids = req.body.ids;
+        const result = await Order.deleteOrders(ids);
         res.send(result);
     } catch (err) {
         next(err);

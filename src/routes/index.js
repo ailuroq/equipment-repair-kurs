@@ -21,5 +21,8 @@ router.use('/device-names', require('./deviceNames'));
 //queries tables
 router.use('/complex-queries', require('./queries'));
 
+//diagrams
+router.use('/diagrams', require('./diagrams'));
+
 
 module.exports = router;

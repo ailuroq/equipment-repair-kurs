@@ -23,10 +23,13 @@ exports.getInsertOrderInfo = async () => {
     return { masters, devices };
 };
 
-exports.insertOrder = async (receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId) => {
+exports.insertOrder = async (orderDate, completionDate, orderCompleted, deviceId, masterId) => {
+    const getBiggestNumber = await pool.query('select * from orders order by receipt_number desc limit 1');
+
     const insertOrderQuery = 'insert into orders(receipt_number, order_date, completion_date, order_completed, device_id, master_id)\n' +
         'values($1,$2,$3,$4,$5,$6)';
-    await pool.query(insertOrderQuery, [receiptNumber, orderDate, completionDate, orderCompleted, deviceId, masterId]);
+
+    await pool.query(insertOrderQuery, [getBiggestNumber.rows[0].receipt_number + 1, orderDate, completionDate, orderCompleted, deviceId, masterId]);
 };
 
 exports.getUpdateOrderInfo = async (id) => {
@@ -70,14 +73,6 @@ exports.deleteOrders = async (ids) => {
     for (const id of ids) {
         await pool.query(deleteOrdersQuery, [id]);
     }
-    const getAllOrdersQuery = 'select orders.id, receipt_number, order_date, completion_date, order_completed, device_names.name as device, repair_firms.name as firm from orders\n'
-        + 'left join repair_firms on repair_firms.id = orders.firm_id\n'
-        + 'left join devices on devices.id = orders.device_id\n'
-        + 'left join device_names on device_names.id = devices.name_id\n'
-        + 'order by id asc';
-    const queryResult = await pool.query(getAllOrdersQuery);
-    const orders = queryResult.rows;
-    return {orders};
 };
 
 exports.getOrderForView = async (id) => {
@@ -90,7 +85,7 @@ exports.getOrderForView = async (id) => {
         'where orders.id = $1';
     let queryResult = await pool.query(getOrderForView, [id]);
     const order = queryResult.rows[0];
-    const getRepairsQuery = 'select repairs.completion, repairs.price, work.type from repairs\n' +
+    const getRepairsQuery = 'select repairs.id, repairs.completion, repairs.price, work.type from repairs\n' +
         'inner join orders on orders.id = repairs.order_id\n' +
         'inner join work on work.id = repairs.work_id\n' +
         'where orders.id = $1';
@@ -112,12 +107,26 @@ exports.getOrderForView = async (id) => {
 };
 
 exports.findOrders = async (data) => {
-    const findQuery = 'select orders.id, receipt_number, order_date, completion_date, order_completed, device_names.name as device, repair_firms.name as firm from orders\n'
-        + 'left join repair_firms on repair_firms.id = orders.firm_id\n'
-        + 'left join devices on devices.id = orders.device_id\n'
-        + 'left join device_names on device_names.id = devices.name_id\n' +
-        'where receipt_number=$1 or master_id=$1\n'
-        + 'order by id asc';
+    if (!data) return;
+    if (data === 'Готов') data = true;
+    if (data === 'Не готов') data = false;
+    let findQuery;
+    if (data === true || data === false) {
+        findQuery = 'select orders.id, receipt_number, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date, order_completed, device_names.name as device, masters.lastname as master from orders\n' +
+            'inner join masters on masters.id = orders.master_id\n' +
+            'inner join devices on devices.id = orders.device_id\n' +
+            'inner join device_names on device_names.id = devices.name_id\n' +
+            'where order_completed=$1' +
+            'order by id asc';
+    }
+    if (parseInt(data)) {
+        findQuery = 'select orders.id, receipt_number, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date, order_completed, device_names.name as device, masters.lastname as master from orders\n' +
+            'inner join masters on masters.id = orders.master_id\n' +
+            'inner join devices on devices.id = orders.device_id\n' +
+            'inner join device_names on device_names.id = devices.name_id\n' +
+            'where receipt_number=$1' +
+            'order by id asc';
+    }
     const queryResult = await pool.query(findQuery, [data]);
     const orders = queryResult.rows;
     return {orders};

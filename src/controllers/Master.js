@@ -77,6 +77,7 @@ exports.getMasterForView = async (id) => {
                           'where masters.id = $1';
     const queryResult = await pool.query(getMasterById, [id]);
     const master = queryResult.rows[0];
+    console.log(master)
     return {master};
 };
 
