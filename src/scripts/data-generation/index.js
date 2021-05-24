@@ -3,7 +3,7 @@ const pool = require('../../database/pool');
 const { deleteAndFillReferences } = require('./references/references');
 
 
-const fullGeneration = async (numberOfClients) => {
+export const fullGeneration = async (numberOfClients) => {
     const deleteAllTables = 'DELETE FROM repairs;'
                           + 'DELETE FROM orders;'
                           + 'DELETE FROM masters;'
