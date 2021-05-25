@@ -108,8 +108,8 @@ exports.getOrderForView = async (id) => {
 
 exports.findOrders = async (data) => {
     if (!data) return;
-    if (data === 'Готов') data = true;
-    if (data === 'Не готов') data = false;
+    if (data === 'Выполнен') data = true;
+    if (data === 'Не выполнен') data = false;
     let findQuery;
     if (data === true || data === false) {
         findQuery = 'select orders.id, receipt_number, to_char(order_date, \'dd-mm-yyyy\') as order_date, to_char(completion_date, \'dd-mm-yyyy\') as completion_date, order_completed, device_names.name as device, masters.lastname as master from orders\n' +

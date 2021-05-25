@@ -87,7 +87,7 @@ exports.groupDevicesByCountries = async () => {
 };
 //Запрос на запросе по принципу левого соединения
 exports.noOrderPerPeriod = async (from, to) => {
-    const query = 'select * from (\n' +
+    /*const query = 'select * from (\n' +
         '\tselect count(orders.id), repair_firms.id, repair_firms.name, repair_firms.phone,orders.order_date, orders.completion_date from repair_firms\n' +
         '\tleft join masters on masters.firm_id = repair_firms.id\n' +
         '\tleft join orders on orders.master_id = masters.id\n' +
@@ -96,7 +96,15 @@ exports.noOrderPerPeriod = async (from, to) => {
         ') result\n' +
         'where result.count = 0 \n' +
         'and (result.order_date >= $1 or result.completion_date < $2) or\n' +
-        '(result.order_date is null and result.completion_date is null)';
+        '(result.order_date is null and result.completion_date is null)';*/
+    const query = 'select * from (\n' +
+        '\tselect count(orders.id), repair_firms.id, repair_firms.name, repair_firms.phone,orders.order_date, orders.completion_date from repair_firms\n' +
+        '\tleft join masters on masters.firm_id = repair_firms.id\n' +
+        '\tleft join orders on orders.master_id = masters.id and orders.order_date >= $1 and  orders.completion_date < $2\n' +
+        '\tgroup by repair_firms.id, repair_firms.name, repair_firms.phone, orders.order_date, orders.completion_date\n' +
+        '\torder by repair_firms.id\n' +
+        ') result\n' +
+        'where result.count = 0';
     const queryResult = await pool.query(query, [from, to]);
     const firms = queryResult.rows;
     return {firms};

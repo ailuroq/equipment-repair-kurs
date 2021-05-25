@@ -100,6 +100,7 @@ router.get('/no_orders_per_period', async (req, res, next) => {
     try {
         const {from, to} = req.query;
         const result = await Query.noOrderPerPeriod(from, to);
+        console.log(result)
         res.send(result);
     } catch (err) {
         next(err);
